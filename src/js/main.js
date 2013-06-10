@@ -1,10 +1,14 @@
 (function() {
 	'use strict';
 
-	var DEVELOPING = true;
+	var DEVELOPING = true,
+		SAMPLING_RATE = 48000,
+		BUFFER_SIZE = 4096;
 
 	var renderer,
-		audioContext;
+		audioContext,
+		jsAudioNode,
+		sorolletPlayer;
 
 	preSetup();
 
@@ -14,7 +18,7 @@
 			start = document.getElementById('start');
 
 		// Audio API & WebGL?
-		if(	AudioDetector.detects( [ 'webAudioSupport' ] ) ) {
+		if( AudioDetector.detects( [ 'webAudioSupport' ] ) ) {
 			if( !Detector.webgl ) {
 				Detector.addGetWebGLMessage({ parent: container });
 				return;
@@ -38,6 +42,31 @@
 
 	}
 
+	function audioSetup() {
+
+		audioContext = new AudioContext();
+		jsAudioNode = audioContext.createJavaScriptNode( BUFFER_SIZE ),
+		sorolletPlayer = new SOROLLET.Player( SAMPLING_RATE );
+
+		jsAudioNode.onaudioprocess = function(event) {
+			var buffer = event.outputBuffer,
+				outputBufferLeft = buffer.getChannelData(0),
+				outputBufferRight = buffer.getChannelData(1),
+				numSamples = outputBufferLeft.length,
+				sorolletBuffer = sorolletPlayer.getBuffer(numSamples);
+
+			for(var i = 0; i < numSamples; i++) {
+				var buf = sorolletBuffer[i];
+				outputBufferLeft[i] = buf;
+				outputBufferRight[i] = buf;
+			}
+		};
+
+		// init sorollet using song array
+		SOROLLET.Legacy.loadSongFromArray(sorolletPlayer, song);
+
+	}
+
 	function setup() {
 		renderer = new THREE.WebGLRenderer({ antialias: false });
 		document.body.appendChild(renderer.domElement);
@@ -48,7 +77,11 @@
 		// TODO 3d paraphernalia setup
 
 		// Audio setup
-		audioContext = new AudioContext();
+		audioSetup();
+
+		// Finally start playing!
+		// what was that thing that didn't quite work on Chrome if this was done too early due to some GC thingy? TODO check that out!
+		jsAudioNode.connect( audioContext.destination );
 	}
 
 	function onResize() {
