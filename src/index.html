@@ -3,16 +3,24 @@
 	<head>
 		<meta charset="utf8">
 		<title>to_the_beat // js</title>
+		<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
 		<div id="wrapper">
-			<div id="preso">
-				stuff
+			<div id="intro">
+				<h1>...</h1>
+				<p id="desc">An interactive ... by <a href="http://5013.es/">5013</a></p>
+				<p id="start">START</p>
+				<p><a href="http://5013.es/p/h/">About</a> - <a href="https://github.com/sole/3400">Source code</a> - <a href="http://www.youtube.com/watch?v=luACMw6iL9k">Video capture</a></p>
 			</div>
 			<div id="container">
 			</div>
 		</div>
-		<script src="song.js"></script>
-		<script src="main.js"></script>
+		<script src="js/libs/AudioContextMonkeyPatch.js"></script>
+		<script src="js/libs/Detector.js"></script>
+		<script src="js/libs/AudioDetector.js"></script>
+		<script src="js/libs/THREE.r58.min.js"></script>
+		<script src="js/data/song.js"></script>
+		<script src="js/main.js"></script>
 	</body>
 </html>
