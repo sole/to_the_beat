@@ -3,7 +3,7 @@ body {
 	color: #ccc;
 	margin: 0;
 	padding: 0;
-	overflow: hidden;
+	xoverflow: hidden;
 	font-weight: normal;
 	font-family: Georgia, Times New Roman, serif;
 	font-style: italic;
@@ -25,3 +25,56 @@ body {
 		width: 100%;
 		height: 100%;
 	}
+
+/* debugggggg */
+
+#debug {
+	position: absolute;
+	top: 0;
+	left: 0;
+	font-family: Arial, sans-serif;
+	font-size: 62.5%;
+	color: #000;
+}
+
+#debug > div {
+	float: left;
+}
+
+.section_label {
+	display: block;
+	margin: 3px 0;
+	font-weight: bold;
+}
+
+.ADSR_GUI {
+	display: box;
+	display: -webkit-box;
+	display: -moz-box;
+	box-orient: horizontal;
+	-webkit-box-orient: horizontal;
+	-moz-box-orient: horizontal;
+}
+
+.controls_row {
+	display: box;
+	display: -webkit-box;
+	display: -moz-box;
+	box-orient: horizontal;
+	-webkit-box-orient: horizontal;
+	-moz-box-orient: horizontal;
+}
+
+.control {
+	cursor: pointer;
+	text-align: center;
+	margin-right: 3px;
+	min-width: 40px;
+	max-width: 50px;
+}
+	.control .label {
+		font-size: 9px;
+		text-transform: lowercase;
+	}
+
+

@@ -64,8 +64,37 @@
 
 		// init sorollet using song array
 		SOROLLET.Legacy.loadSongFromArray(sorolletPlayer, song);
+		var voice1 = sorolletPlayer.voices[0];
+		var voice2 = sorolletPlayer.voices[1];
 
+		// Manually override some stuff so that this sounds sort of decent
+		voice1.wave1Octave = 3;
+		voice1.pitchEnvelope.setOutputRange(-10, 10);
+		voice1.pitchEnvelope.setTimeScale(3);
+
+		voice2.wave1Volume = 0;
+		voice2.wave2Volume = 0;
+		voice2.noiseAmount = 0.5;
+		voice2.volumeEnvelope.setAttack(0);
+		voice2.volumeEnvelope.setDecay(0.2);
+		voice2.volumeEnvelope.setTimeScale(0.1);
+		
 		console.log(sorolletPlayer);
+		
+		var debug = document.getElementById('debug');
+
+		var gui1 = new SOROLLET.VoiceGUI();
+		gui1.attachTo( voice1 );
+
+		var gui2 = new SOROLLET.VoiceGUI();
+		gui2.attachTo( voice2 );
+
+		debug.appendChild(gui1.dom);
+		debug.appendChild(gui2.dom);
+
+		// for better hackage
+		window.sorolletPlayer = sorolletPlayer;
+
 	}
 
 	function setup() {
