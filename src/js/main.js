@@ -6,6 +6,8 @@
 		BUFFER_SIZE = 4096;
 
 	var renderer,
+		scene,
+		camera,
 		audioContext,
 		jsAudioNode,
 		sorolletPlayer;
@@ -79,8 +81,6 @@
 		voice2.volumeEnvelope.setDecay(0.2);
 		voice2.volumeEnvelope.setTimeScale(0.1);
 		
-		console.log(sorolletPlayer);
-		
 		var debug = document.getElementById('debug');
 
 		var gui1 = new SOROLLET.VoiceGUI();
@@ -97,14 +97,30 @@
 
 	}
 
+	function graphicsSetup() {
+		scene = new THREE.Scene();
+		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+		camera.position.set(5, 5, 5);
+		camera.lookAt(new THREE.Vector3(0, 0, 0) );
+
+		var meshMaterial = new THREE.MeshBasicMaterial({ color: 0xFF00FF, wireframe: true });
+
+		var cube = new THREE.Mesh( new THREE.CubeGeometry( 5, 5, 5 ), meshMaterial );
+		cube.position.set( 0, 0, 0 );
+		scene.add( cube );
+	}
+
 	function setup() {
 		renderer = new THREE.WebGLRenderer({ antialias: false });
-		document.body.appendChild(renderer.domElement);
+		renderer.setClearColorHex( 0xeeeeee, 1.0 );
+		
+		document.getElementById('renderer').appendChild(renderer.domElement);
 
 		window.addEventListener('resize', onResize, false);
 		onResize();
 
 		// TODO 3d paraphernalia setup
+		graphicsSetup();
 
 		// Audio setup
 		audioSetup();
@@ -113,6 +129,7 @@
 		// what was that thing that didn't quite work on Chrome if this was done too early due to some GC thingy? TODO check that out!
 		jsAudioNode.connect( audioContext.destination );
 		sorolletPlayer.play();
+		render();
 	}
 
 	function onResize() {
@@ -120,6 +137,12 @@
 			h = window.innerHeight;
 
 		renderer.setSize(w, h);
+	}
+
+	function render() {
+		requestAnimationFrame( render );
+
+		renderer.render( scene, camera );
 	}
 
 })();
