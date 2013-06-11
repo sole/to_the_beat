@@ -65,6 +65,7 @@
 		// init sorollet using song array
 		SOROLLET.Legacy.loadSongFromArray(sorolletPlayer, song);
 
+		console.log(sorolletPlayer);
 	}
 
 	function setup() {
@@ -82,6 +83,7 @@
 		// Finally start playing!
 		// what was that thing that didn't quite work on Chrome if this was done too early due to some GC thingy? TODO check that out!
 		jsAudioNode.connect( audioContext.destination );
+		sorolletPlayer.play();
 	}
 
 	function onResize() {
