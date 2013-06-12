@@ -8,6 +8,7 @@
 	var renderer,
 		scene,
 		camera,
+		textXPLSV,
 		audioContext,
 		jsAudioNode,
 		sorolletPlayer;
@@ -97,11 +98,66 @@
 
 	}
 
+	// Builds a mesh with lines that render the letters in data
+	function makeText(data, numInstances) {
+		var lineMaterial = new THREE.LineBasicMaterial({ color: 0xFF0000, linewidth: 1 });
+		var lineGeometry = new THREE.Geometry();
+		var text = new THREE.Object3D();
+		var index = 0;
+		var numCharacters = data[index++];
+		var characterWidth = 1.4;
+		var x = 0;
+
+		// Build geometry first
+		for(var i = 0; i < numCharacters; i++) {
+			var numSegments = data[index++];
+
+			console.log('char', i, 'num segs', numSegments);
+
+			for(var j = 0; j < numSegments; j++) {
+				var absX1 = data[index++];
+				var absY1 = data[index++];
+				var absX2 = data[index++];
+				var absY2 = data[index++];
+				
+				console.log('segment', j, 'x', absX1, 'y', absY1);
+
+				lineGeometry.vertices.push(new THREE.Vector3(x + absX1, absY1, 0));
+				lineGeometry.vertices.push(new THREE.Vector3(x + absX2, absY2, 0));
+
+			}
+				x += characterWidth;
+
+		}
+
+		// and numInstances lines later
+		for(var k = 0; k < numInstances; k++) {
+			var line = new THREE.Line(lineGeometry, lineMaterial, THREE.LinePieces);
+			text.add( line );
+
+		}
+console.log(text);
+	
+		var testMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFF00 });
+		var testCube = new THREE.Mesh( new THREE.CubeGeometry(1, 1, 1), testMaterial);
+		
+		//text.add(testCube);
+
+		return text;
+
+	}
+
 	function graphicsSetup() {
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
-		camera.position.set(5, 5, 5);
+		var p = 100;
+		camera.position.set(p, p, p);
 		camera.lookAt(new THREE.Vector3(0, 0, 0) );
+
+		textXPLSV = makeText(gfx.text_xplsv, 1);
+		var s = 5;
+		textXPLSV.scale.set(s,s,s);
+		scene.add(textXPLSV);
 
 		var meshMaterial = new THREE.MeshBasicMaterial({ color: 0xFF00FF, wireframe: true });
 
@@ -119,7 +175,7 @@
 		window.addEventListener('resize', onResize, false);
 		onResize();
 
-		// TODO 3d paraphernalia setup
+		// 3D paraphernalia setup
 		graphicsSetup();
 
 		// Audio setup
