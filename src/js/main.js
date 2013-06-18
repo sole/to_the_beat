@@ -102,7 +102,7 @@
 
 	// Builds a mesh with lines that render the letters in data
 	function makeText(data, numInstances) {
-		var lineMaterial = new THREE.LineBasicMaterial({ color: 0xFF0000, linewidth: 1 });
+		var lineMaterial = new THREE.LineBasicMaterial({ color: 0xFFB2BD, linewidth: 1 });
 		var lineGeometry = new THREE.Geometry();
 		var text = new THREE.Object3D();
 		var index = 0;
@@ -209,20 +209,20 @@
 
         textXPLSV = makeText(gfx.text_xplsv, numCopies);
 		textXPLSV.scale.set(s,s,s);
-        // scene.add(textXPLSV);
+        scene.add(textXPLSV);
         
         textToTheBeat = makeText(gfx.text_to_the_beat, numCopies);
         textToTheBeat.scale.set(s, s, s);
         //scene.add(textToTheBeat);
         
-        grid = makeGrid(500);
+        grid = makeGrid(5000);
         scene.add(grid);
 
 		var meshMaterial = new THREE.MeshBasicMaterial({ color: 0xFF00FF, wireframe: true });
 
 		var cube = new THREE.Mesh( new THREE.CubeGeometry( 5, 5, 5 ), meshMaterial );
 		cube.position.set( 0, 0, 0 );
-		scene.add( cube );
+		//scene.add( cube );
 	}
 
 	function setup() {
