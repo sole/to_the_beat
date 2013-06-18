@@ -7,7 +7,7 @@
 
 	var renderer,
 		scene,
-		camera,
+		camera, cameraTarget = new THREE.Vector3(),
 		textXPLSV,
         textToTheBeat,
         grid,
@@ -144,6 +144,7 @@
 
 
     function makeGrid(width) {
+
         var num = 30;
         var thickEach = 5;
         var gridInc = 4 * width / num;
@@ -196,6 +197,8 @@
 
 	function graphicsSetup() {
 		scene = new THREE.Scene();
+        scene.fog = new THREE.Fog(0x383733, 100, 200);
+
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 		var p = 100;
 		camera.position.set(p, p, p);
@@ -253,6 +256,12 @@
 
 	function render() {
 		requestAnimationFrame( render );
+
+        var t = Date.now() * 0.0001;
+        var s = 100;
+
+        camera.position.set(s * Math.sin(t), s * Math.cos(t/2), s * Math.cos(t));
+        camera.lookAt(cameraTarget);
 
 		renderer.render( scene, camera );
 	}
