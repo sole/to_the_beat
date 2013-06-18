@@ -10,6 +10,7 @@
 		camera,
 		textXPLSV,
         textToTheBeat,
+        grid,
 		audioContext,
 		jsAudioNode,
 		sorolletPlayer;
@@ -141,6 +142,58 @@
 
 	}
 
+
+    function makeGrid(width) {
+        var num = 30;
+        var thickEach = 5;
+        var gridInc = 4 * width / num;
+        var gridTop = width * 2;
+        var xPos = -gridTop;
+        var yPos;
+        var grid = new THREE.Object3D();
+        var gridThinMaterial = new THREE.LineDashedMaterial({ linewidth: 1, color: 0x800000, dashSize: 2, gapSize: 1 });
+        var gridThickMaterial = new THREE.LineBasicMaterial({ linewidth: 3, color: 0xFF0000 });
+        var geometryThin = new THREE.Geometry();
+        var geometryThick = new THREE.Geometry();
+        var geometry;
+
+        for(var i = 0; i < num; i++) {
+            
+            yPos = -gridTop;
+            
+            for(var j = 0; j < num; j++) {
+
+                if(i % thickEach === 0 & j % thickEach === 0) {
+                    
+                    geometry = geometryThick;
+
+                } else {
+
+                    geometry = geometryThin;
+                
+                }
+                
+                geometry.vertices.push(new THREE.Vector3(xPos, yPos, -gridTop));
+                geometry.vertices.push(new THREE.Vector3(xPos, yPos,  gridTop));
+
+                geometry.vertices.push(new THREE.Vector3(xPos, -gridTop, yPos));
+                geometry.vertices.push(new THREE.Vector3(xPos,  gridTop, yPos));
+                
+                yPos += gridInc;
+            }
+
+            xPos += gridInc;
+
+        }
+        
+        geometryThin.computeLineDistances();
+
+        grid.add(new THREE.Line(geometryThin, gridThinMaterial, THREE.LinePieces));
+        grid.add(new THREE.Line(geometryThick, gridThickMaterial, THREE.LinePieces));
+
+        return grid;
+    }
+
 	function graphicsSetup() {
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
@@ -158,6 +211,9 @@
         textToTheBeat = makeText(gfx.text_to_the_beat, numCopies);
         textToTheBeat.scale.set(s, s, s);
         //scene.add(textToTheBeat);
+        
+        grid = makeGrid(500);
+        scene.add(grid);
 
 		var meshMaterial = new THREE.MeshBasicMaterial({ color: 0xFF00FF, wireframe: true });
 
