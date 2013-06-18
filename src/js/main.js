@@ -151,8 +151,8 @@
         var xPos = -gridTop;
         var yPos;
         var grid = new THREE.Object3D();
-        var gridThinMaterial = new THREE.LineDashedMaterial({ linewidth: 1, color: 0x800000, dashSize: 2, gapSize: 1 });
-        var gridThickMaterial = new THREE.LineBasicMaterial({ linewidth: 3, color: 0xFF0000 });
+        var gridThinMaterial = new THREE.LineDashedMaterial({ linewidth: 1, color: 0xF1EFB4, dashSize: 2, gapSize: 1, opacity: 0.5, transparent: true, blending: THREE.AdditiveBlending });
+        var gridThickMaterial = new THREE.LineBasicMaterial({ linewidth: 3, color: 0xF1EFB4, opacity: 0.5, transparent: true, blending: THREE.AdditiveBlending });
         var geometryThin = new THREE.Geometry();
         var geometryThick = new THREE.Geometry();
         var geometry;
@@ -224,7 +224,7 @@
 
 	function setup() {
 		renderer = new THREE.WebGLRenderer({ antialias: false });
-		renderer.setClearColorHex( 0xeeeeee, 1.0 );
+		renderer.setClearColor( 0x383733, 1.0 );
 		
 		document.getElementById('renderer').appendChild(renderer.domElement);
 
