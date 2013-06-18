@@ -13,7 +13,8 @@
         grid,
 		audioContext,
 		jsAudioNode,
-		sorolletPlayer;
+		sorolletPlayer,
+        songOrder, songPattern, songRow;
 
 	preSetup();
 
@@ -83,7 +84,21 @@
 		voice2.volumeEnvelope.setAttack(0);
 		voice2.volumeEnvelope.setDecay(0.2);
 		voice2.volumeEnvelope.setTimeScale(0.1);
-		
+
+        // Events
+        sorolletPlayer.addEventListener('orderChanged', function(ev) {
+            songOrder = ev.order;
+        }, false);
+
+        sorolletPlayer.addEventListener('patternChanged', function(ev) {
+            songPattern = ev.pattern;
+        }, false);
+
+        sorolletPlayer.addEventListener('rowChanged', function(ev) {
+            songRow = ev.row;
+        }, false);
+
+        // For debugging/hacking
 		var debug = document.getElementById('debug');
 
 		var gui1 = new SOROLLET.VoiceGUI();
@@ -94,6 +109,7 @@
 
 		debug.appendChild(gui1.dom);
 		debug.appendChild(gui2.dom);
+
 
 		// for better hackage
 		window.sorolletPlayer = sorolletPlayer;
