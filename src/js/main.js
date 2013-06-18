@@ -9,6 +9,7 @@
 		scene,
 		camera,
 		textXPLSV,
+        textToTheBeat,
 		audioContext,
 		jsAudioNode,
 		sorolletPlayer;
@@ -134,15 +135,8 @@
 		for(var k = 0; k < numInstances; k++) {
 			var line = new THREE.Line(lineGeometry, lineMaterial, THREE.LinePieces);
 			text.add( line );
-
 		}
-console.log(text);
 	
-		var testMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFF00 });
-		var testCube = new THREE.Mesh( new THREE.CubeGeometry(1, 1, 1), testMaterial);
-		
-		//text.add(testCube);
-
 		return text;
 
 	}
@@ -154,10 +148,16 @@ console.log(text);
 		camera.position.set(p, p, p);
 		camera.lookAt(new THREE.Vector3(0, 0, 0) );
 
-		textXPLSV = makeText(gfx.text_xplsv, 1);
+        var numCopies = 10;
 		var s = 5;
+
+        textXPLSV = makeText(gfx.text_xplsv, numCopies);
 		textXPLSV.scale.set(s,s,s);
-		scene.add(textXPLSV);
+        // scene.add(textXPLSV);
+        
+        textToTheBeat = makeText(gfx.text_to_the_beat, numCopies);
+        textToTheBeat.scale.set(s, s, s);
+        //scene.add(textToTheBeat);
 
 		var meshMaterial = new THREE.MeshBasicMaterial({ color: 0xFF00FF, wireframe: true });
 
