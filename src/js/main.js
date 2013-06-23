@@ -104,6 +104,13 @@
             updateInfo();
         }, false);
 
+        // init values - maybe it should listen to the first orderChanged event and
+        // start rendering then (and unlisten to that event) TODO review this
+        songOrder = 0;
+        songPattern = sorolletPlayer.orderList[songOrder];
+        songRow = 0;
+
+
         // For debugging/hacking
 		var debug = document.getElementById('debug');
 
@@ -291,14 +298,22 @@
             eyeX = -250 + row;
         } else {
             var radius = 120;
-            var ang = time * 8; //0.0008;
+            var ang = time * 0.08; //0.0008;
             cameraFOV = 120;
             eyeX = radius * Math.sin(ang);
             eyeY = radius * Math.cos(ang);
         }
 
-        var bdNote = sorolletPlayer.patterns[sorolletPlayer.orderList[order]].getCell(row, 0).note;
+        var thePattern = sorolletPlayer.patterns[sorolletPlayer.orderList[order]];
+        if(thePattern === undefined) {
+            console.log('aaag', order, sorolletPlayer.orderList[order]);
+        }
+
+        var theCell = thePattern.getCell(row, 0);
+        var bdNote = theCell.note;
         var extra = 0;
+
+
 
         if(bdNote == 48) {
             extra += 5;
