@@ -236,7 +236,7 @@
         
         textToTheBeat = makeText(gfx.text_to_the_beat, numCopies);
         textToTheBeat.scale.set(s, s, s);
-        //scene.add(textToTheBeat);
+        scene.add(textToTheBeat);
         
         grid = makeGrid(5000);
         scene.add(grid);
@@ -348,6 +348,41 @@
 
         }
 
+
+        // Text
+        var textScale, activeText, activeTextChildren, activeTextNumChildren, range = 0.06;
+        
+        if(order < mainOrder) {
+            textScale = 40 + rrand(0, 5);
+        } else {
+            textScale = 80;
+        }
+
+        if(row < 16 || (row > 32 && row < 48)) {
+            activeText = textXPLSV;
+			// draw_text(G_text_xplsv, t_scale);
+		} else {
+            activeText = textToTheBeat;
+			//draw_text(G_text_to_the_beat, t_scale);
+		}
+
+        // I think this is pretty ugly but since I'm programming this on a plane
+        // I also think it's OK as am high while programming it.
+        // As in, literally *pretty* high.
+        textXPLSV.visible = (activeText === textXPLSV);
+        textToTheBeat.visible = !textXPLSV.visible;
+        activeText.scale.set(textScale, textScale, textScale);
+
+        activeTextChildren = activeText.children;
+        activeTextNumChildren = activeTextChildren.length;
+
+        for(var i = 0; i < activeTextNumChildren; i++) {
+            var child = activeTextChildren[i];
+            child.position.set(rrand(0, range), rrand(0, range), rrand(0, range));
+        }
+
+        // camera!
+
         camera.position.set(eyeX, eyeY, eyeZ);
         camera.lookAt(cameraTarget);
     }
@@ -355,6 +390,10 @@
     
     function updateInfo() {
         info.innerHTML = 'order ' + songOrder + ': ' + songPattern + '/' + songRow;
+    }
+
+    function rrand(min, max) {
+        return Math.random() * max;
     }
 
 	function onResize() {
