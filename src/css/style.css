@@ -42,6 +42,15 @@ body {
 	float: left;
 }
 
+#info {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+}
+
+
 .section_label {
 	display: block;
 	margin: 3px 0;

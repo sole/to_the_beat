@@ -8,13 +8,15 @@
 	var renderer,
 		scene,
 		camera, cameraTarget = new THREE.Vector3(),
+        rotation = 0, // for _the_ effect
 		textXPLSV,
         textToTheBeat,
         grid,
 		audioContext,
 		jsAudioNode,
 		sorolletPlayer,
-        songOrder, songPattern, songRow;
+        songOrder, songPattern, songRow,
+        infoLayer = document.getElementById('info');
 
 	preSetup();
 
@@ -88,14 +90,17 @@
         // Events
         sorolletPlayer.addEventListener('orderChanged', function(ev) {
             songOrder = ev.order;
+            updateInfo();
         }, false);
 
         sorolletPlayer.addEventListener('patternChanged', function(ev) {
             songPattern = ev.pattern;
+            updateInfo();
         }, false);
 
         sorolletPlayer.addEventListener('rowChanged', function(ev) {
             songRow = ev.row;
+            updateInfo();
         }, false);
 
         // For debugging/hacking
@@ -115,6 +120,7 @@
 		window.sorolletPlayer = sorolletPlayer;
 
 	}
+
 
 	// Builds a mesh with lines that render the letters in data
 	function makeText(data, numInstances) {
@@ -211,9 +217,10 @@
         return grid;
     }
 
+
 	function graphicsSetup() {
 		scene = new THREE.Scene();
-        scene.fog = new THREE.Fog(0x383733, 100, 200);
+        //scene.fog = new THREE.Fog(0x383733, 100, 200);
 
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 		var p = 100;
@@ -239,7 +246,10 @@
 		var cube = new THREE.Mesh( new THREE.CubeGeometry( 5, 5, 5 ), meshMaterial );
 		cube.position.set( 0, 0, 0 );
 		//scene.add( cube );
+
+        console.log(scene.rotation);
 	}
+
 
 	function setup() {
 		renderer = new THREE.WebGLRenderer({ antialias: false });
@@ -263,6 +273,90 @@
 		render();
 	}
 
+    function updateEffect(time, order, pattern, row) {
+        var mainOrder = 2;
+        var endingOrder = 6;
+
+        var cameraFOV = 90,
+            cameraAspect = 1.3;
+
+        var eyeX = -90, eyeY = 0, eyeZ = 30;
+        var rotationX, rotationY;
+
+        if(order < mainOrder) {
+            cameraFOV = 100;
+            eyeX = -250 + row;
+        } else {
+            var radius = 120;
+            var ang = time * 8; //0.0008;
+            cameraFOV = 120;
+            eyeX = radius * Math.sin(ang);
+            eyeY = radius * Math.cos(ang);
+        }
+
+        /*
+         * int bd_note = sorollet_get_channel_note(0);
+
+	if(bd_note == 48)
+	{
+		extra += 5;
+	}
+
+	if(extra > 0)
+	{
+		float am =  0.75 * elapsed_ticks;
+
+		extra -= am;
+		if(extra < 0)
+		{
+			extra = 0;
+		}
+
+		rotation += am;
+		if(rotation < 0)
+		{
+			rotation = 0;
+		}
+	}*/
+
+        if(order >= mainOrder) {
+            if(row % 8 === 0) {
+                rotationY = - 0.25 * rotation;
+            } else {
+                rotationX = 0.25 * rotation;
+            }
+        }
+
+        // TODO: camera FOV
+
+        if(order >= mainOrder) {
+
+            scene.rotation.z = rotation;
+            // glRotatef(rotation, 0, 0, 1);
+
+            if(rotationX) {
+
+                // glRotatef(rotation_x, 1, 0, 0);
+                scene.rotation.x = rotationX;
+            }
+
+
+            if(rotationY) {
+                // glRotatef(rotation_y, 0, 1, -1);
+                scene.rotation.y = -rotationY;
+            }
+
+        }
+
+        camera.position.set(eyeX, eyeY, eyeZ);
+        camera.lookAt(cameraTarget);
+    }
+
+    
+    function updateInfo() {
+        info.innerHTML = 'order ' + songOrder + ': ' + songPattern + '/' + songRow;
+    }
+
 	function onResize() {
 		var w = window.innerWidth,
 			h = window.innerHeight;
@@ -276,8 +370,10 @@
         var t = Date.now() * 0.0001;
         var s = 100;
 
-        camera.position.set(s * Math.sin(t), s * Math.cos(t/2), s * Math.cos(t));
-        camera.lookAt(cameraTarget);
+        updateEffect(t, songOrder, songPattern, songRow);
+
+        //camera.position.set(s * Math.sin(t), s * Math.cos(t/2), s * Math.cos(t));
+        //camera.lookAt(cameraTarget);
 
 		renderer.render( scene, camera );
 	}
