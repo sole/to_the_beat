@@ -9,6 +9,7 @@
 		scene,
 		camera, cameraTarget = new THREE.Vector3(),
         rotation = 0, // for _the_ effect
+        lastRenderTime = 0,
 		textXPLSV,
         textToTheBeat,
         grid,
@@ -154,6 +155,8 @@
 
 		}
 
+        // TODO center geometry
+
 		// and numInstances lines later
 		for(var k = 0; k < numInstances; k++) {
 			var line = new THREE.Line(lineGeometry, lineMaterial, THREE.LinePieces);
@@ -273,7 +276,7 @@
 		render();
 	}
 
-    function updateEffect(time, order, pattern, row) {
+    function updateEffect(time, deltaTime, order, pattern, row) {
         var mainOrder = 2;
         var endingOrder = 6;
 
@@ -294,56 +297,50 @@
             eyeY = radius * Math.cos(ang);
         }
 
-        /*
-         * int bd_note = sorollet_get_channel_note(0);
+        var bdNote = sorolletPlayer.patterns[sorolletPlayer.orderList[order]].getCell(row, 0).note;
+        var extra = 0;
 
-	if(bd_note == 48)
-	{
-		extra += 5;
-	}
+        if(bdNote == 48) {
+            extra += 5;
+        }
 
-	if(extra > 0)
-	{
-		float am =  0.75 * elapsed_ticks;
+        if(extra > 0) {
+            var am = 0.75 * deltaTime;
 
-		extra -= am;
-		if(extra < 0)
-		{
-			extra = 0;
-		}
+            extra -= am;
+            if(extra < 0) {
+                extra = 0;
+            }
 
-		rotation += am;
-		if(rotation < 0)
-		{
-			rotation = 0;
-		}
-	}*/
+            rotation += am;
+            if(rotation < 0) {
+                rotation = 0;
+            }
+
+        }
 
         if(order >= mainOrder) {
             if(row % 8 === 0) {
-                rotationY = - 0.25 * rotation;
+                rotationY = -0.25 * rotation;
             } else {
                 rotationX = 0.25 * rotation;
             }
         }
 
         // TODO: camera FOV
-
         if(order >= mainOrder) {
 
             scene.rotation.z = rotation;
-            // glRotatef(rotation, 0, 0, 1);
 
             if(rotationX) {
 
-                // glRotatef(rotation_x, 1, 0, 0);
                 scene.rotation.x = rotationX;
             }
 
 
             if(rotationY) {
-                // glRotatef(rotation_y, 0, 1, -1);
-                scene.rotation.y = -rotationY;
+                scene.rotation.y = rotationY;
+                scene.rotation.z *= -rotationY;
             }
 
         }
@@ -360,17 +357,14 @@
 
         if(row < 16 || (row > 32 && row < 48)) {
             activeText = textXPLSV;
-			// draw_text(G_text_xplsv, t_scale);
+            scene.add(textXPLSV);
+            scene.remove(textToTheBeat);
 		} else {
             activeText = textToTheBeat;
-			//draw_text(G_text_to_the_beat, t_scale);
+            scene.remove(textXPLSV);
+            scene.add(textToTheBeat);
 		}
-
-        // I think this is pretty ugly but since I'm programming this on a plane
-        // I also think it's OK as am high while programming it.
-        // As in, literally *pretty* high.
-        textXPLSV.visible = (activeText === textXPLSV);
-        textToTheBeat.visible = !textXPLSV.visible;
+       
         activeText.scale.set(textScale, textScale, textScale);
 
         activeTextChildren = activeText.children;
@@ -380,6 +374,8 @@
             var child = activeTextChildren[i];
             child.position.set(rrand(0, range), rrand(0, range), rrand(0, range));
         }
+
+        // TODO vertically downwards moving text
 
         // camera!
 
@@ -393,7 +389,7 @@
     }
 
     function rrand(min, max) {
-        return Math.random() * max;
+        return (Math.random() + min) * (max - min);
     }
 
 	function onResize() {
@@ -406,10 +402,10 @@
 	function render() {
 		requestAnimationFrame( render );
 
-        var t = Date.now() * 0.0001;
-        var s = 100;
+        var t = Date.now() * 0.001;
 
-        updateEffect(t, songOrder, songPattern, songRow);
+        updateEffect(t, t - lastRenderTime, songOrder, songPattern, songRow);
+        lastRenderTime = t;
 
         //camera.position.set(s * Math.sin(t), s * Math.cos(t/2), s * Math.cos(t));
         //camera.lookAt(cameraTarget);
