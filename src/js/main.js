@@ -422,9 +422,6 @@
         updateEffect(t, t - lastRenderTime, songOrder, songPattern, songRow);
         lastRenderTime = t;
 
-        //camera.position.set(s * Math.sin(t), s * Math.cos(t/2), s * Math.cos(t));
-        //camera.lookAt(cameraTarget);
-
 		renderer.render( scene, camera );
 	}
 
