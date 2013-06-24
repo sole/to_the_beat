@@ -88,27 +88,27 @@
 		voice2.volumeEnvelope.setDecay(0.2);
 		voice2.volumeEnvelope.setTimeScale(0.1);
 
-        // Events
-        sorolletPlayer.addEventListener('orderChanged', function(ev) {
-            songOrder = ev.order;
-            updateInfo();
-        }, false);
+		// Events
+		sorolletPlayer.addEventListener('orderChanged', function(ev) {
+			songOrder = ev.order;
+			updateInfo();
+		}, false);
 
-        sorolletPlayer.addEventListener('patternChanged', function(ev) {
-            songPattern = ev.pattern;
-            updateInfo();
-        }, false);
+		sorolletPlayer.addEventListener('patternChanged', function(ev) {
+			songPattern = ev.pattern;
+			updateInfo();
+		}, false);
 
-        sorolletPlayer.addEventListener('rowChanged', function(ev) {
-            songRow = ev.row;
-            updateInfo();
-        }, false);
+		sorolletPlayer.addEventListener('rowChanged', function(ev) {
+			songRow = ev.row;
+			updateInfo();
+		}, false);
 
-        // init values - maybe it should listen to the first orderChanged event and
-        // start rendering then (and unlisten to that event) TODO review this
-        songOrder = 0;
-        songPattern = sorolletPlayer.orderList[songOrder];
-        songRow = 0;
+		// init values - maybe it should listen to the first orderChanged event and
+		// start rendering then (and unlisten to that event) TODO review this
+		songOrder = 0;
+		songPattern = sorolletPlayer.orderList[songOrder];
+		songRow = 0;
 
 
         // For debugging/hacking
@@ -162,7 +162,7 @@
 
 		}
 
-        // TODO center geometry
+		THREE.GeometryUtils.center(lineGeometry);
 
 		// and numInstances lines later
 		for(var k = 0; k < numInstances; k++) {
