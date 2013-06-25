@@ -287,18 +287,17 @@
 		var mainOrder = 2;
 		var endingOrder = 6;
 
-		var cameraFOV = 90,
-			cameraAspect = 1.3;
+		var cameraFOV = 90;
 
-		var eyeX = -90, eyeY = 0, eyeZ = 30;
+		var eyeX = -90, eyeY = 0, eyeZ = 300;
 		var rotationX, rotationY;
 
 		if(order < mainOrder) {
 			cameraFOV = 100;
-			eyeX = -250 + row;
+			eyeX = -750 + row*10;
 		} else {
-			var radius = 120;
-			var ang = time * 0.08; //0.0008;
+			var radius = 240;
+			var ang = time * 0.8; //0.0008;
 			cameraFOV = 120;
 			eyeX = radius * Math.sin(ang);
 			eyeY = radius * Math.cos(ang);
@@ -315,7 +314,7 @@
 
 
 		if(bdNote == 48) {
-			extra += 5;
+			extra += 50;
 		}
 
 		if(extra > 0) {
