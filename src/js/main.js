@@ -342,7 +342,6 @@
             }
         }
 
-        // TODO: camera FOV
         if(order >= mainOrder) {
 
             scene.rotation.z = rotation;
@@ -393,7 +392,7 @@
         // TODO vertically downwards moving text
 
         // camera!
-
+		camera.fov = cameraFOV;
         camera.position.set(eyeX, eyeY, eyeZ);
         camera.lookAt(cameraTarget);
     }
