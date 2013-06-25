@@ -283,119 +283,125 @@
 		render();
 	}
 
-    function updateEffect(time, deltaTime, order, pattern, row) {
-        var mainOrder = 2;
-        var endingOrder = 6;
+	function updateEffect(time, deltaTime, order, pattern, row) {
+		var mainOrder = 2;
+		var endingOrder = 6;
 
-        var cameraFOV = 90,
-            cameraAspect = 1.3;
+		var cameraFOV = 90,
+			cameraAspect = 1.3;
 
-        var eyeX = -90, eyeY = 0, eyeZ = 30;
-        var rotationX, rotationY;
+		var eyeX = -90, eyeY = 0, eyeZ = 30;
+		var rotationX, rotationY;
 
-        if(order < mainOrder) {
-            cameraFOV = 100;
-            eyeX = -250 + row;
-        } else {
-            var radius = 120;
-            var ang = time * 0.08; //0.0008;
-            cameraFOV = 120;
-            eyeX = radius * Math.sin(ang);
-            eyeY = radius * Math.cos(ang);
-        }
-
-        var thePattern = sorolletPlayer.patterns[sorolletPlayer.orderList[order]];
-        if(thePattern === undefined) {
-            console.log('aaag', order, sorolletPlayer.orderList[order]);
-        }
-
-        var theCell = thePattern.getCell(row, 0);
-        var bdNote = theCell.note;
-        var extra = 0;
-
-
-
-        if(bdNote == 48) {
-            extra += 5;
-        }
-
-        if(extra > 0) {
-            var am = 0.75 * deltaTime;
-
-            extra -= am;
-            if(extra < 0) {
-                extra = 0;
-            }
-
-            rotation += am;
-            if(rotation < 0) {
-                rotation = 0;
-            }
-
-        }
-
-        if(order >= mainOrder) {
-            if(row % 8 === 0) {
-                rotationY = -0.25 * rotation;
-            } else {
-                rotationX = 0.25 * rotation;
-            }
-        }
-
-        if(order >= mainOrder) {
-
-            scene.rotation.z = rotation;
-
-            if(rotationX) {
-
-                scene.rotation.x = rotationX;
-            }
-
-
-            if(rotationY) {
-                scene.rotation.y = rotationY;
-                scene.rotation.z *= -rotationY;
-            }
-
-        }
-
-
-        // Text
-        var textScale, activeText, activeTextChildren, activeTextNumChildren, range = 0.06;
-        
-        if(order < mainOrder) {
-            textScale = 40 + rrand(0, 5);
-        } else {
-            textScale = 80;
-        }
-
-        if(row < 16 || (row > 32 && row < 48)) {
-            activeText = textXPLSV;
-            scene.add(textXPLSV);
-            scene.remove(textToTheBeat);
+		if(order < mainOrder) {
+			cameraFOV = 100;
+			eyeX = -250 + row;
 		} else {
-            activeText = textToTheBeat;
-            scene.remove(textXPLSV);
-            scene.add(textToTheBeat);
+			var radius = 120;
+			var ang = time * 0.08; //0.0008;
+			cameraFOV = 120;
+			eyeX = radius * Math.sin(ang);
+			eyeY = radius * Math.cos(ang);
 		}
-       
-        activeText.scale.set(textScale, textScale, textScale);
 
-        activeTextChildren = activeText.children;
-        activeTextNumChildren = activeTextChildren.length;
+		var thePattern = sorolletPlayer.patterns[sorolletPlayer.orderList[order]];
+		if(thePattern === undefined) {
+			console.log('aaag', order, sorolletPlayer.orderList[order]);
+		}
 
-        for(var i = 0; i < activeTextNumChildren; i++) {
-            var child = activeTextChildren[i];
-            child.position.set(rrand(0, range), rrand(0, range), rrand(0, range));
-        }
+		var theCell = thePattern.getCell(row, 0);
+		var bdNote = theCell.note;
+		var extra = 0;
 
-        // TODO vertically downwards moving text
 
-        // camera!
+		if(bdNote == 48) {
+			extra += 5;
+		}
+
+		if(extra > 0) {
+			var am = 0.75 * deltaTime;
+
+			extra -= am;
+			if(extra < 0) {
+				extra = 0;
+			}
+
+			rotation += am;
+			if(rotation < 0) {
+				rotation = 0;
+			}
+
+		}
+
+		if(order >= mainOrder) {
+			if(row % 8 === 0) {
+				rotationY = -0.25 * rotation;
+			} else {
+				rotationX = 0.25 * rotation;
+			}
+		}
+
+		if(order >= mainOrder) {
+
+			scene.rotation.z = rotation;
+
+			if(rotationX) {
+
+				scene.rotation.x = rotationX;
+			}
+
+
+			if(rotationY) {
+				scene.rotation.y = rotationY;
+				scene.rotation.z *= -rotationY;
+			}
+
+		}
+
+		if(order >= mainOrder && order < endingOrder + 2) {
+			scene.add(grid);
+		} else {
+			scene.remove(grid);
+		}
+
+		// Text
+		var textScale, activeText, activeTextChildren, activeTextNumChildren, range = 0.06;
+
+		if(order < mainOrder) {
+			textScale = 40 + rrand(0, 5);
+		} else {
+			textScale = 80;
+		}
+
+		if(row < 16 || (row > 32 && row < 48)) {
+			activeText = textXPLSV;
+			scene.add(textXPLSV);
+			scene.remove(textToTheBeat);
+		} else {
+			activeText = textToTheBeat;
+			scene.remove(textXPLSV);
+			scene.add(textToTheBeat);
+		}
+
+		activeText.scale.set(textScale, textScale, textScale);
+
+		activeTextChildren = activeText.children;
+		activeTextNumChildren = activeTextChildren.length;
+
+		for(var i = 0; i < activeTextNumChildren; i++) {
+			var child = activeTextChildren[i];
+			child.position.set(rrand(0, range), rrand(0, range), rrand(0, range));
+		}
+
+		// TODO vertically downwards moving text
+
+		// TODO 'tris'
+
+		// camera!
 		camera.fov = cameraFOV;
-        camera.position.set(eyeX, eyeY, eyeZ);
-        camera.lookAt(cameraTarget);
-    }
+		camera.position.set(eyeX, eyeY, eyeZ);
+		camera.lookAt(cameraTarget);
+	}
 
     
     function updateInfo() {
