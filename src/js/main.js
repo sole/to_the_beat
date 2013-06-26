@@ -3,24 +3,27 @@
 
 	var DEVELOPING = true,
 		SAMPLING_RATE = 48000,
-		BUFFER_SIZE = 4096;
-	var MAIN_ORDER = 2,
+		BUFFER_SIZE = 4096,
+		MAIN_ORDER = 2,
 		ENDING_ORDER = 6;
 
 
 	var renderer,
 		scene,
 		camera, cameraTarget = new THREE.Vector3(),
-        rotation = 0, // for _the_ effect
-        lastRenderTime = 0,
+		rotation = 0, // for _the_ effect
+		rotationX, rotationY,
+		boom = 0,
+		textScale = 0,
+		lastRenderTime = 0,
 		textXPLSV,
-        textToTheBeat,
-        grid,
+		textToTheBeat,
+		grid,
 		audioContext,
 		jsAudioNode,
 		sorolletPlayer,
-        songOrder, songPattern, songRow,
-        infoLayer = document.getElementById('info');
+		songOrder, songPattern, songRow,
+		infoLayer = document.getElementById('info');
 
 	preSetup();
 
@@ -245,22 +248,15 @@
 
         textXPLSV = makeText(gfx.text_xplsv, numCopies);
 		textXPLSV.scale.set(s,s,s);
-        scene.add(textXPLSV);
-        
-        textToTheBeat = makeText(gfx.text_to_the_beat, numCopies);
-        textToTheBeat.scale.set(s, s, s);
-        scene.add(textToTheBeat);
-        
-        grid = makeGrid(4000);
-        scene.add(grid);
+		scene.add(textXPLSV);
 
-		var meshMaterial = new THREE.MeshBasicMaterial({ color: 0xFF00FF, wireframe: true });
+		textToTheBeat = makeText(gfx.text_to_the_beat, numCopies);
+		textToTheBeat.scale.set(s, s, s);
+		scene.add(textToTheBeat);
 
-		var cube = new THREE.Mesh( new THREE.CubeGeometry( 5, 5, 5 ), meshMaterial );
-		cube.position.set( 0, 0, 0 );
-		//scene.add( cube );
+		grid = makeGrid(4000);
+		scene.add(grid);
 
-        console.log(scene.rotation);
 	}
 
 
@@ -279,6 +275,29 @@
 		// Audio setup
 		audioSetup();
 
+		// check for notes when the row changes, not on every frame
+		sorolletPlayer.addEventListener('rowChanged', function(e) {
+			var order = e.order,
+				row = e.row;
+			var thePattern = sorolletPlayer.patterns[sorolletPlayer.orderList[order]];
+			var theCell = thePattern.getCell(row, 0);
+			var bdNote = theCell.note;
+
+			if(bdNote !== null && bdNote === 48) {
+				boom += 5;
+				textScale += 0.5;
+			}
+
+			if(order >= MAIN_ORDER) {
+				if(row % 8 === 0) {
+					rotationY = -0.25 * rotation;
+				} else {
+					rotationX = 0.25 * rotation;
+				}
+			}
+		
+		}, false);
+
 		// Finally start playing!
 		// what was that thing that didn't quite work on Chrome if this was done too early due to some GC thingy? TODO check that out!
 		jsAudioNode.connect( audioContext.destination );
@@ -287,9 +306,9 @@
 	}
 
 	function updateCamera(time, deltaTime, order, pattern, row) {
+
 		var cameraFOV = 90;
 		var eyeX = -90, eyeY = 0, eyeZ = 300;
-		var rotationX, rotationY;
 
 		if(order < MAIN_ORDER) {
 			cameraFOV = 100;
@@ -310,40 +329,22 @@
 
 	function updateEffect(time, deltaTime, order, pattern, row) {
 		
-		var thePattern = sorolletPlayer.patterns[sorolletPlayer.orderList[order]];
-		var theCell = thePattern.getCell(row, 0);
-		var bdNote = theCell.note;
-		var extra = 0;
-
-
-		if(bdNote == 48) {
-			extra += 5;
-		}
-
-		if(extra > 0) {
+		
+		if(boom > 0) {
 			var am = 0.75 * deltaTime;
 
-			extra -= am;
-			if(extra < 0) {
-				extra = 0;
+			boom -= am;
+			if(boom < 0) {
+				boom = 0;
 			}
 
 			rotation += am;
 			if(rotation < 0) {
 				rotation = 0;
 			}
-
 		}
 
-		if(order >= MAIN_ORDER) {
-			if(row % 8 === 0) {
-				rotationY = -0.25 * rotation;
-			} else {
-				rotationX = 0.25 * rotation;
-			}
-		}
-
-		if(order >= MAIN_ORDER) {
+		if(true || order >= MAIN_ORDER) {
 
 			scene.rotation.z = rotation;
 
@@ -367,12 +368,12 @@
 		}
 
 		// Text
-		var textScale, activeText, activeTextChildren, activeTextNumChildren, range = 0.06;
+		var tScale, activeText, activeTextChildren, activeTextNumChildren, range = 0.06;
 
 		if(order < MAIN_ORDER) {
-			textScale = 40 + rrand(0, 5);
+			tScale = textScale + rrand(0, 0.1);
 		} else {
-			textScale = 80;
+			tScale = 80;
 		}
 
 		if(row < 16 || (row > 32 && row < 48)) {
@@ -385,7 +386,7 @@
 			scene.add(textToTheBeat);
 		}
 
-		activeText.scale.set(textScale, textScale, textScale);
+		activeText.scale.set(tScale, tScale, tScale);
 
 		activeTextChildren = activeText.children;
 		activeTextNumChildren = activeTextChildren.length;
@@ -422,10 +423,10 @@
 	function render() {
 		requestAnimationFrame( render );
 
-        var t = Date.now() * 0.001;
+		var t = Date.now() * 0.001;
 
-        updateEffect(t, t - lastRenderTime, songOrder, songPattern, songRow);
-        lastRenderTime = t;
+		updateEffect(t, t - lastRenderTime, songOrder, songPattern, songRow);
+		lastRenderTime = t;
 
 		renderer.render( scene, camera );
 	}
