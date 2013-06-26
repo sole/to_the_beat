@@ -4,6 +4,9 @@
 	var DEVELOPING = true,
 		SAMPLING_RATE = 48000,
 		BUFFER_SIZE = 4096;
+	var MAIN_ORDER = 2,
+		ENDING_ORDER = 6;
+
 
 	var renderer,
 		scene,
@@ -175,62 +178,62 @@
 	}
 
 
-    function makeGrid(width) {
+	function makeGrid(width) {
 
-        var num = 30;
-        var thickEach = 5;
-        var gridInc = 4 * width / num;
-        var gridTop = width * 2;
-        var xPos = -gridTop;
-        var yPos;
-        var grid = new THREE.Object3D();
-        var gridThinMaterial = new THREE.LineDashedMaterial({ linewidth: 1, color: 0xF1EFB4, dashSize: 2, gapSize: 1, opacity: 0.5, transparent: true, blending: THREE.AdditiveBlending });
-        var gridThickMaterial = new THREE.LineBasicMaterial({ linewidth: 3, color: 0xF1EFB4, opacity: 0.5, transparent: true, blending: THREE.AdditiveBlending });
-        var geometryThin = new THREE.Geometry();
-        var geometryThick = new THREE.Geometry();
-        var geometry;
+		var num = 30;
+		var thickEach = 5;
+		var gridInc = 4 * width / num;
+		var gridTop = width * 2;
+		var xPos = -gridTop;
+		var yPos;
+		var grid = new THREE.Object3D();
+		var gridThinMaterial = new THREE.LineDashedMaterial({ linewidth: 1, color: 0xF1EFB4, dashSize: 2, gapSize: 1, opacity: 0.5, transparent: true, blending: THREE.AdditiveBlending });
+		var gridThickMaterial = new THREE.LineBasicMaterial({ linewidth: 3, color: 0xF1EFB4, opacity: 0.5, transparent: true, blending: THREE.AdditiveBlending });
+		var geometryThin = new THREE.Geometry();
+		var geometryThick = new THREE.Geometry();
+		var geometry;
 
-        for(var i = 0; i < num; i++) {
-            
-            yPos = -gridTop;
-            
-            for(var j = 0; j < num; j++) {
+		for(var i = 0; i < num; i++) {
 
-                if(i % thickEach === 0 & j % thickEach === 0) {
-                    
-                    geometry = geometryThick;
+			yPos = -gridTop;
 
-                } else {
+			for(var j = 0; j < num; j++) {
 
-                    geometry = geometryThin;
-                
-                }
-                
-                geometry.vertices.push(new THREE.Vector3(xPos, yPos, -gridTop));
-                geometry.vertices.push(new THREE.Vector3(xPos, yPos,  gridTop));
+				if(i % thickEach === 0 & j % thickEach === 0) {
 
-                geometry.vertices.push(new THREE.Vector3(xPos, -gridTop, yPos));
-                geometry.vertices.push(new THREE.Vector3(xPos,  gridTop, yPos));
-                
-                yPos += gridInc;
-            }
+					geometry = geometryThick;
 
-            xPos += gridInc;
+				} else {
 
-        }
-        
-        geometryThin.computeLineDistances();
+					geometry = geometryThin;
 
-        grid.add(new THREE.Line(geometryThin, gridThinMaterial, THREE.LinePieces));
-        grid.add(new THREE.Line(geometryThick, gridThickMaterial, THREE.LinePieces));
+				}
 
-        return grid;
-    }
+				geometry.vertices.push(new THREE.Vector3(xPos, yPos, -gridTop));
+				geometry.vertices.push(new THREE.Vector3(xPos, yPos,  gridTop));
+
+				geometry.vertices.push(new THREE.Vector3(xPos, -gridTop, yPos));
+				geometry.vertices.push(new THREE.Vector3(xPos,  gridTop, yPos));
+
+				yPos += gridInc;
+			}
+
+			xPos += gridInc;
+
+		}
+
+		geometryThin.computeLineDistances();
+
+		grid.add(new THREE.Line(geometryThin, gridThinMaterial, THREE.LinePieces));
+		grid.add(new THREE.Line(geometryThick, gridThickMaterial, THREE.LinePieces));
+
+		return grid;
+	}
 
 
 	function graphicsSetup() {
 		scene = new THREE.Scene();
-        //scene.fog = new THREE.Fog(0x383733, 100, 200);
+		//scene.fog = new THREE.Fog(0x383733, 500, 1000);
 
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 		var p = 100;
@@ -248,7 +251,7 @@
         textToTheBeat.scale.set(s, s, s);
         scene.add(textToTheBeat);
         
-        grid = makeGrid(5000);
+        grid = makeGrid(4000);
         scene.add(grid);
 
 		var meshMaterial = new THREE.MeshBasicMaterial({ color: 0xFF00FF, wireframe: true });
@@ -283,16 +286,12 @@
 		render();
 	}
 
-	function updateEffect(time, deltaTime, order, pattern, row) {
-		var mainOrder = 2;
-		var endingOrder = 6;
-
+	function updateCamera(time, deltaTime, order, pattern, row) {
 		var cameraFOV = 90;
-
 		var eyeX = -90, eyeY = 0, eyeZ = 300;
 		var rotationX, rotationY;
 
-		if(order < mainOrder) {
+		if(order < MAIN_ORDER) {
 			cameraFOV = 100;
 			eyeX = -750 + row*10;
 		} else {
@@ -303,18 +302,22 @@
 			eyeY = radius * Math.cos(ang);
 		}
 
-		var thePattern = sorolletPlayer.patterns[sorolletPlayer.orderList[order]];
-		if(thePattern === undefined) {
-			console.log('aaag', order, sorolletPlayer.orderList[order]);
-		}
+		camera.fov = cameraFOV;
+		camera.position.set(eyeX, eyeY, eyeZ);
+		camera.lookAt(cameraTarget);
 
+	}
+
+	function updateEffect(time, deltaTime, order, pattern, row) {
+		
+		var thePattern = sorolletPlayer.patterns[sorolletPlayer.orderList[order]];
 		var theCell = thePattern.getCell(row, 0);
 		var bdNote = theCell.note;
 		var extra = 0;
 
 
 		if(bdNote == 48) {
-			extra += 50;
+			extra += 5;
 		}
 
 		if(extra > 0) {
@@ -332,7 +335,7 @@
 
 		}
 
-		if(order >= mainOrder) {
+		if(order >= MAIN_ORDER) {
 			if(row % 8 === 0) {
 				rotationY = -0.25 * rotation;
 			} else {
@@ -340,7 +343,7 @@
 			}
 		}
 
-		if(order >= mainOrder) {
+		if(order >= MAIN_ORDER) {
 
 			scene.rotation.z = rotation;
 
@@ -357,7 +360,7 @@
 
 		}
 
-		if(order >= mainOrder && order < endingOrder + 2) {
+		if(order >= MAIN_ORDER && order < ENDING_ORDER + 2) {
 			scene.add(grid);
 		} else {
 			scene.remove(grid);
@@ -366,7 +369,7 @@
 		// Text
 		var textScale, activeText, activeTextChildren, activeTextNumChildren, range = 0.06;
 
-		if(order < mainOrder) {
+		if(order < MAIN_ORDER) {
 			textScale = 40 + rrand(0, 5);
 		} else {
 			textScale = 80;
@@ -396,10 +399,8 @@
 
 		// TODO 'tris'
 
-		// camera!
-		camera.fov = cameraFOV;
-		camera.position.set(eyeX, eyeY, eyeZ);
-		camera.lookAt(cameraTarget);
+		updateCamera(time, deltaTime, order, pattern, row);
+
 	}
 
     
