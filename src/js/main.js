@@ -8,7 +8,8 @@
 		ENDING_ORDER = 6;
 
 
-	var renderer,
+	var rendering = false,
+		renderer,
 		scene,
 		camera, cameraTarget = new THREE.Vector3(),
 		cameraTween,
@@ -100,6 +101,10 @@
 		sorolletPlayer.addEventListener('orderChanged', function(ev) {
 			songOrder = ev.order;
 			updateInfo();
+			if(!rendering) {
+				rendering = true;
+				render();
+			}
 		}, false);
 
 		sorolletPlayer.addEventListener('patternChanged', function(ev) {
@@ -112,8 +117,6 @@
 			updateInfo();
 		}, false);
 
-		// init values - maybe it should listen to the first orderChanged event and
-		// start rendering then (and unlisten to that event) TODO review this
 		songOrder = 0;
 		songPattern = sorolletPlayer.orderList[songOrder];
 		songRow = 0;
@@ -298,7 +301,7 @@
 					x: rrand(-r*2, r*2),
 					y: rrand(-r, r),
 					z: camera.position.z + 0.0125
-				}, 400).start();
+				}, 200).start();
 
 			}
 
@@ -340,7 +343,7 @@
 		// what was that thing that didn't quite work on Chrome if this was done too early due to some GC thingy? TODO check that out!
 		jsAudioNode.connect( audioContext.destination );
 		sorolletPlayer.play();
-		render();
+	
 	}
 
 	function updateCamera(time, deltaTime, order, pattern, row) {
@@ -424,7 +427,7 @@
 
 		// TODO 'tris'
 
-		// updateCamera(time, deltaTime, order, pattern, row);
+		updateCamera(time, deltaTime, order, pattern, row);
 
 	}
 
@@ -450,13 +453,13 @@
 
 		var t = Date.now() * 0.001;
 
-		
+		TWEEN.update();
+
 		updateEffect(t, t - lastRenderTime, songOrder, songPattern, songRow);
 		lastRenderTime = t;
 
-		TWEEN.update();
+		
 
-		camera.lookAt(cameraTarget);
 
 		renderer.render( scene, camera );
 	}
