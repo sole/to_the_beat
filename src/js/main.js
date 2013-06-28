@@ -348,8 +348,8 @@
 
 	function updateCamera(time, deltaTime, order, pattern, row) {
 
-		var cameraFOV = 90;
-		var eyeX = -90, eyeY = 0, eyeZ = 300;
+		var cameraFOV = 45;
+		//var eyeX = -90, eyeY = 0, eyeZ = 300;
 
 		/*if(order < MAIN_ORDER) {
 			cameraFOV = 100;
@@ -366,6 +366,7 @@
 		}*/
 
 		camera.fov = cameraFOV;
+		camera.updateProjectionMatrix();
 		//camera.position.set(eyeX, eyeY, eyeZ);
 		camera.lookAt(cameraTarget);
 
