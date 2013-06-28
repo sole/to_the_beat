@@ -238,7 +238,7 @@
 
 	function graphicsSetup() {
 		scene = new THREE.Scene();
-		//scene.fog = new THREE.Fog(0x383733, 500, 1000);
+		scene.fog = new THREE.Fog(0x383733, 100, 500);
 
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 		cameraTween = new TWEEN.Tween(camera.position).easing(TWEEN.Easing.Exponential.InOut);
@@ -298,7 +298,7 @@
 					x: rrand(-r*2, r*2),
 					y: rrand(-r, r),
 					z: camera.position.z + 0.0125
-				}, 250).start();
+				}, 400).start();
 
 			}
 
@@ -385,7 +385,7 @@
 			}
 		}
 
-		if(true || order >= MAIN_ORDER) {
+		if(order >= MAIN_ORDER) {
 
 			scene.rotation.z = rotation;
 
@@ -405,7 +405,7 @@
 		var tScale, activeTextChildren, activeTextNumChildren, range = 0.06;
 
 		if(order < MAIN_ORDER) {
-			tScale = textScale;// + rrand(0, 0.1);
+			tScale = textScale + rrand(0, 0.1);
 		} else {
 			tScale = 80;
 		}
@@ -417,7 +417,7 @@
 
 		for(var i = 0; i < activeTextNumChildren; i++) {
 			var child = activeTextChildren[i];
-			child.position.set(rrand(0, range), rrand(0, range), rrand(0, range));
+			child.position.set(rrand(-range, range), rrand(-range, range), rrand(-range, range));
 		}
 
 		// TODO vertically downwards moving text
