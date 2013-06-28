@@ -15,6 +15,7 @@
 		rotationX, rotationY,
 		boom = 0,
 		textScale = 0,
+		activeText,
 		lastRenderTime = 0,
 		textXPLSV,
 		textToTheBeat,
@@ -175,7 +176,7 @@
 			var line = new THREE.Line(lineGeometry, lineMaterial, THREE.LinePieces);
 			text.add( line );
 		}
-	
+
 		return text;
 
 	}
@@ -288,14 +289,38 @@
 				textScale += 0.5;
 			}
 
-			if(order >= MAIN_ORDER) {
+			if(order < MAIN_ORDER) {
+
+				if(row < 16 || (row > 32 && row < 48)) {
+					activeText = textXPLSV;
+					scene.remove(textToTheBeat);
+				} else {
+					activeText = textToTheBeat;
+					scene.remove(textXPLSV);
+				}
+				scene.add(activeText);
+
+			} else {
+
 				if(row % 8 === 0) {
 					rotationY = -0.25 * rotation;
 				} else {
 					rotationX = 0.25 * rotation;
 				}
+
 			}
 		
+		}, false);
+
+		// also check for some more things on order changes
+		sorolletPlayer.addEventListener('orderChanged', function(e) {
+			var order = e.order;
+			if(order >= MAIN_ORDER && order < ENDING_ORDER + 2) {
+				scene.add(grid);
+			} else {
+				scene.remove(grid);
+			}
+
 		}, false);
 
 		// Finally start playing!
@@ -353,7 +378,6 @@
 				scene.rotation.x = rotationX;
 			}
 
-
 			if(rotationY) {
 				scene.rotation.y = rotationY;
 				scene.rotation.z *= -rotationY;
@@ -361,29 +385,13 @@
 
 		}
 
-		if(order >= MAIN_ORDER && order < ENDING_ORDER + 2) {
-			scene.add(grid);
-		} else {
-			scene.remove(grid);
-		}
-
 		// Text
-		var tScale, activeText, activeTextChildren, activeTextNumChildren, range = 0.06;
+		var tScale, activeTextChildren, activeTextNumChildren, range = 0.06;
 
 		if(order < MAIN_ORDER) {
-			tScale = textScale + rrand(0, 0.1);
+			tScale = textScale;// + rrand(0, 0.1);
 		} else {
 			tScale = 80;
-		}
-
-		if(row < 16 || (row > 32 && row < 48)) {
-			activeText = textXPLSV;
-			scene.add(textXPLSV);
-			scene.remove(textToTheBeat);
-		} else {
-			activeText = textToTheBeat;
-			scene.remove(textXPLSV);
-			scene.add(textToTheBeat);
 		}
 
 		activeText.scale.set(tScale, tScale, tScale);
