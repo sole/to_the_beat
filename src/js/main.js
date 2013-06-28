@@ -410,6 +410,9 @@
 
 		if(order < MAIN_ORDER) {
 			tScale = textScale + rrand(0, 0.1);
+			var elapsedRows = (order * 64 + row);
+			//range += (128.0 / (1+elapsedRows)) * 0.05;
+			range += 0.8 * (1 - elapsedRows / 128.0);
 		} else {
 			tScale = 80;
 		}
