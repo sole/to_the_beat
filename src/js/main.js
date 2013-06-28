@@ -11,10 +11,11 @@
 	var renderer,
 		scene,
 		camera, cameraTarget = new THREE.Vector3(),
+		cameraTween,
 		rotation = 0, // for _the_ effect
 		rotationX, rotationY,
 		boom = 0,
-		textScale = 0,
+		textScale = 0.5,
 		activeText,
 		lastRenderTime = 0,
 		textXPLSV,
@@ -240,6 +241,8 @@
 		//scene.fog = new THREE.Fog(0x383733, 500, 1000);
 
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+		cameraTween = new TWEEN.Tween(camera.position).easing(TWEEN.Easing.Exponential.InOut);
+
 		var p = 100;
 		camera.position.set(p, p, p);
 		camera.lookAt(new THREE.Vector3(0, 0, 0) );
@@ -250,6 +253,7 @@
         textXPLSV = makeText(gfx.text_xplsv, numCopies);
 		textXPLSV.scale.set(s,s,s);
 		scene.add(textXPLSV);
+		activeText = textXPLSV;
 
 		textToTheBeat = makeText(gfx.text_to_the_beat, numCopies);
 		textToTheBeat.scale.set(s, s, s);
@@ -287,6 +291,15 @@
 			if(bdNote !== null && bdNote === 48) {
 				boom += 5;
 				textScale += 0.5;
+
+				var r = 20;
+				cameraTween.stop();
+				cameraTween.to({
+					x: rrand(-r*2, r*2),
+					y: rrand(-r, r),
+					z: camera.position.z + 0.0125
+				}, 250).start();
+
 			}
 
 			if(order < MAIN_ORDER) {
@@ -335,19 +348,22 @@
 		var cameraFOV = 90;
 		var eyeX = -90, eyeY = 0, eyeZ = 300;
 
-		if(order < MAIN_ORDER) {
+		/*if(order < MAIN_ORDER) {
 			cameraFOV = 100;
-			eyeX = -750 + row*10;
+			// eyeX = -750 + row*10;
+			var r = row + order * 64;
+			eyeX = -640 + r * 8;
+			eyeZ = r/2;
 		} else {
 			var radius = 240;
 			var ang = time * 0.8; //0.0008;
 			cameraFOV = 120;
 			eyeX = radius * Math.sin(ang);
 			eyeY = radius * Math.cos(ang);
-		}
+		}*/
 
 		camera.fov = cameraFOV;
-		camera.position.set(eyeX, eyeY, eyeZ);
+		//camera.position.set(eyeX, eyeY, eyeZ);
 		camera.lookAt(cameraTarget);
 
 	}
@@ -408,17 +424,18 @@
 
 		// TODO 'tris'
 
-		updateCamera(time, deltaTime, order, pattern, row);
+		// updateCamera(time, deltaTime, order, pattern, row);
 
 	}
 
     
     function updateInfo() {
-        info.innerHTML = 'order ' + songOrder + ': ' + songPattern + '/' + songRow;
+        info.innerHTML = 'order ' + songOrder + ': ' + songPattern + '/' + songRow + 
+			'<br />cam x=' + camera.position.x.toFixed(2) + ' y=' + camera.position.y.toFixed(2) + ' z= ' + camera.position.z.toFixed(2) ;
     }
 
     function rrand(min, max) {
-        return (Math.random() + min) * (max - min);
+        return min + Math.random() * (max - min);
     }
 
 	function onResize() {
@@ -433,8 +450,13 @@
 
 		var t = Date.now() * 0.001;
 
+		
 		updateEffect(t, t - lastRenderTime, songOrder, songPattern, songRow);
 		lastRenderTime = t;
+
+		TWEEN.update();
+
+		camera.lookAt(cameraTarget);
 
 		renderer.render( scene, camera );
 	}
