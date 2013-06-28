@@ -241,7 +241,7 @@
 
 	function graphicsSetup() {
 		scene = new THREE.Scene();
-		scene.fog = new THREE.Fog(0x383733, 100, 500);
+		scene.fog = new THREE.Fog(0x383733, 300, 600);
 
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 		cameraTween = new TWEEN.Tween(camera.position).easing(TWEEN.Easing.Exponential.InOut);
@@ -286,7 +286,8 @@
 		// check for notes when the row changes, not on every frame
 		sorolletPlayer.addEventListener('rowChanged', function(e) {
 			var order = e.order,
-				row = e.row;
+				row = e.row,
+				r;
 			var thePattern = sorolletPlayer.patterns[sorolletPlayer.orderList[order]];
 			var theCell = thePattern.getCell(row, 0);
 			var bdNote = theCell.note;
@@ -295,13 +296,15 @@
 				boom += 5;
 				textScale += 0.5;
 
-				var r = 20;
-				cameraTween.stop();
-				cameraTween.to({
-					x: rrand(-r*2, r*2),
-					y: rrand(-r, r),
-					z: camera.position.z + 0.0125
-				}, 200).start();
+				if(order < MAIN_ORDER) {
+					r = 20;
+					cameraTween.stop();
+					cameraTween.to({
+						x: rrand(-r*2, r*2),
+						y: rrand(-r, r),
+						z: camera.position.z + 0.025
+					}, 200).start();
+				}
 
 			}
 
@@ -317,6 +320,20 @@
 				scene.add(activeText);
 
 			} else {
+
+				if(row % 4 === 0 || bdNote && bdNote === 48) {
+
+					r = 300;
+
+					cameraTween.stop();
+					cameraTween.to({
+						x: rrand(-r, r),
+						y: rrand(-r, r),
+						z: rrand(r / 2, r)
+					}, 300).start();
+
+				}
+
 
 				if(row % 8 === 0) {
 					rotationY = -0.25 * rotation;
@@ -364,6 +381,10 @@
 			eyeX = radius * Math.sin(ang);
 			eyeY = radius * Math.cos(ang);
 		}*/
+
+		if(order >= MAIN_ORDER) {
+			cameraFOV = 90;
+		}
 
 		camera.fov = cameraFOV;
 		camera.updateProjectionMatrix();
