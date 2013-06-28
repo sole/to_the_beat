@@ -22,6 +22,7 @@
 		textXPLSV,
 		textToTheBeat,
 		grid,
+		tris,
 		audioContext,
 		jsAudioNode,
 		sorolletPlayer,
@@ -195,8 +196,8 @@
 		var xPos = -gridTop;
 		var yPos;
 		var grid = new THREE.Object3D();
-		var gridThinMaterial = new THREE.LineDashedMaterial({ linewidth: 1, color: 0xF1EFB4, dashSize: 2, gapSize: 1, opacity: 0.5, transparent: true, blending: THREE.AdditiveBlending });
-		var gridThickMaterial = new THREE.LineBasicMaterial({ linewidth: 3, color: 0xF1EFB4, opacity: 0.5, transparent: true, blending: THREE.AdditiveBlending });
+		var gridThinMaterial = new THREE.LineDashedMaterial({ linewidth: 1, color: 0xF1EFB4, dashSize: 2, gapSize: 2, opacity: 0.25, transparent: true, blending: THREE.AdditiveBlending });
+		var gridThickMaterial = new THREE.LineBasicMaterial({ linewidth: 2, color: 0xF1EFB4, opacity: 0.5, transparent: true, blending: THREE.AdditiveBlending });
 		var geometryThin = new THREE.Geometry();
 		var geometryThick = new THREE.Geometry();
 		var geometry;
@@ -238,10 +239,32 @@
 		return grid;
 	}
 
+	function makeTris(length, separation, radius) {
+
+		var geom = new THREE.Geometry();
+		var mat = new THREE.LineBasicMaterial({ color: 0x79D1EA, transparent: true, blending: THREE.AdditiveBlending, linewidth: 2, opacity: 0.5 });
+		var num = length / separation,
+			startX = -length / 2,
+			x = startX,
+			angle = 0;
+
+		for(var i = 0; i < num; i++) {
+			geom.vertices.push(new THREE.Vector3(x, radius * Math.sin(angle), radius * Math.cos(angle)));
+			x += separation;
+			angle = x * 5;
+		}
+
+		THREE.GeometryUtils.center(geom);
+
+		var line = new THREE.Line(geom, mat, THREE.LinePieces);
+
+		return line;
+	}
+
 
 	function graphicsSetup() {
 		scene = new THREE.Scene();
-		scene.fog = new THREE.Fog(0x383733, 300, 600);
+		//scene.fog = new THREE.Fog(0x383733, 300, 600);
 
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 		cameraTween = new TWEEN.Tween(camera.position).easing(TWEEN.Easing.Exponential.InOut);
@@ -264,6 +287,9 @@
 
 		grid = makeGrid(4000);
 		scene.add(grid);
+
+		tris = makeTris(5600, 1, 85);
+		scene.add(tris);
 
 	}
 
@@ -325,12 +351,14 @@
 
 					r = 300;
 
-					cameraTween.stop();
-					cameraTween.to({
-						x: rrand(-r, r),
-						y: rrand(-r, r),
-						z: rrand(r / 2, r)
-					}, 300).start();
+					cameraTween.stop()
+						.easing(TWEEN.Easing.Exponential.Out)
+						.to({
+							x: rrand(-r, r),
+							y: rrand(-r, r),
+							z: rrand(r / 2, r)
+						}, 400)
+						.start();
 
 				}
 
@@ -383,7 +411,7 @@
 		}*/
 
 		if(order >= MAIN_ORDER) {
-			cameraFOV = 90;
+			cameraFOV = 110 + 40*Math.sin(time*0.05);
 		}
 
 		camera.fov = cameraFOV;
@@ -432,7 +460,6 @@
 		if(order < MAIN_ORDER) {
 			tScale = textScale + rrand(0, 0.1);
 			var elapsedRows = (order * 64 + row);
-			//range += (128.0 / (1+elapsedRows)) * 0.05;
 			range += 0.8 * (1 - elapsedRows / 128.0);
 		} else {
 			tScale = 80;
