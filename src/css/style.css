@@ -3,7 +3,7 @@ body {
 	color: #ccc;
 	margin: 0;
 	padding: 0;
-	xoverflow: hidden;
+	overflow: hidden;
 	font-weight: normal;
 	font-family: Georgia, Times New Roman, serif;
 	font-style: italic;
@@ -43,13 +43,12 @@ body {
 }
 
 #info {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 1rem;
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: rgba(0, 0, 0, 0.3);
+	padding: 1rem;
 }
-
 
 .section_label {
 	display: block;
