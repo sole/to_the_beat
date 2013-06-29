@@ -27,6 +27,8 @@
 		tris,
 		audioContext,
 		jsAudioNode,
+		preCompressorGainNode,
+		compressorNode,
 		sorolletPlayer,
 		songOrder, songPattern, songRow,
 		infoLayer = document.getElementById('info');
@@ -69,6 +71,23 @@
 		jsAudioNode = audioContext.createJavaScriptNode( BUFFER_SIZE ),
 		sorolletPlayer = new SOROLLET.Player( SAMPLING_RATE );
 
+		//var compressorNode;
+		preCompressorGainNode = audioContext.createGainNode();
+		preCompressorGainNode.gain.value = 0.9;
+
+		if(audioContext.createDynamicsCompressor) {
+			compressorNode = audioContext.createDynamicsCompressor();
+			compressorNode.ratio = 12.0;
+		} else {
+			compressorNode = audioContext.createGainNode();
+			compressorNode.gain.value = 1.4;
+		}
+
+		preCompressorGainNode.connect(compressorNode);
+
+		compressorNode.connect(audioContext.destination);
+
+		
 		jsAudioNode.onaudioprocess = function(event) {
 			var buffer = event.outputBuffer,
 				outputBufferLeft = buffer.getChannelData(0),
@@ -506,7 +525,10 @@
 
 		// Finally start playing!
 		// what was that thing that didn't quite work on Chrome if this was done too early due to some GC thingy? TODO check that out!
-		jsAudioNode.connect( audioContext.destination );
+		// jsAudioNode.connect( audioContext.destination );
+		
+		jsAudioNode.connect(preCompressorGainNode);
+
 		sorolletPlayer.play();
 	
 	}
@@ -544,6 +566,9 @@
 			} else {
 				ds.display = 'block';
 			}
+
+			var info = document.getElementById('info');
+			info.style.display = ds.display;
 
 		}
 
