@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var DEVELOPING = true,
+	var DEVELOPING = false,
 		SAMPLING_RATE = 48000,
 		BUFFER_SIZE = 4096,
 		MAIN_ORDER = 2,
@@ -15,8 +15,6 @@
 		camera, cameraTarget = new THREE.Vector3(),
 		cameraTween,
 		cameraTargetTween,
-		rotation = 0, // for _the_ effect
-		rotationX, rotationY,
 		boom = 0,
 		textScale = 0.5,
 		activeText,
@@ -53,13 +51,12 @@
 		}
 
 		container.style.visibility = 'hidden';
-
+		
 		start.addEventListener('click', function startClick(e) {
+			console.log('eh');
 			start.removeEventListener('click', startClick);
 			intro.className = 'loading';
-			start.innerHTML = 'Please wait while LOADING';
-			loadingText = start;
-			introText = document.getElementById('intro_wrapper');
+			start.innerHTML = 'OK, hold on a second...';
 			setTimeout(setup, 100);
 		});
 
@@ -599,7 +596,7 @@
 		if(order < MAIN_ORDER) {
 			tScale = textScale + rrand(0, 0.1);
 			var elapsedRows = (order * 64 + row);
-			range += 0.8 * (1 - elapsedRows / 128.0);
+			range += 0.5 * (1 - elapsedRows / 128.0);
 			tris.material.uniforms.time.value += 0.0005;
 		} else {
 			tScale = 80;

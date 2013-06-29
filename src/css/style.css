@@ -1,21 +1,22 @@
 body {
-	background: #333;
+	background: #383733;
 	color: #ccc;
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
 	font-weight: normal;
-	font-family: Georgia, Times New Roman, serif;
-	font-style: italic;
+	font-family: 'Courier New', monospaced, mono, sans-serif;
 }
 	a {
-		color: #eef;
+		color: #79D1EA;
 		padding: 1px;
 		text-decoration: none;
-		border-bottom: 1px solid #fef;
+		border-bottom: 1px solid #79D1EA;
+		transition: all 0.5s;
 	}
 	a:hover {
-		border-color: #0f0;
+		color: #FFB2BD;
+		border-color: #FFB2BD;
 	}
 
 	#renderer, #container {
@@ -25,6 +26,33 @@ body {
 		width: 100%;
 		height: 100%;
 	}
+
+	h1 {
+		font-weight: normal;
+		font-size: 2.5rem;
+	}
+
+#intro {
+	width: 50%;
+	margin: 0 auto;
+	text-align: center;
+}
+
+#start {
+	font-size: 3rem;
+	cursor: pointer;
+	transition: all 0.5s;
+}
+	#start:hover {
+		color: #fff;
+		text-shadow: 0px 0px 30px #fff;
+	}
+
+#renderer {
+	-webkit-pointer-events: none;
+	-moz-pointer-events: none;
+	pointer-events: none;
+}
 
 #looping {
 	display: none;
