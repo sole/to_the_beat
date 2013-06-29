@@ -68,7 +68,6 @@
 		audioContext = new AudioContext();
 		jsAudioNode = audioContext.createJavaScriptNode( BUFFER_SIZE ),
 		sorolletPlayer = new SOROLLET.Player( SAMPLING_RATE );
-		// sorolletPlayer.repeat = false;
 
 		jsAudioNode.onaudioprocess = function(event) {
 			var buffer = event.outputBuffer,
@@ -364,7 +363,7 @@
 
 		grid = makeGrid(1000);
 
-		tris = makeTris(5600, 3, 85);
+		tris = makeTris(10000, 3, 85);
 		root.add(tris);
 
 	}
@@ -415,7 +414,7 @@
 			// If first order, first row -- fade tris in
 			if(order === 0 && row === 0) {
 				tris.material.uniforms.opacity.value = 0;
-				tris.materialTween.to({ opacity: 0.5 }, 2000)
+				tris.materialTween.to({ opacity: 0.5 }, 16000)
 					.start();
 			}
 
@@ -628,6 +627,11 @@
 			h = window.innerHeight;
 
 		renderer.setSize(w, h);
+
+		if(camera) {
+			camera.aspect = w / h;
+			camera.updateProjectionMatrix();
+		}
 	}
 
 	function render() {
