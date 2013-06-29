@@ -11,6 +11,8 @@
 	var rendering = false,
 		renderer,
 		scene,
+		root,
+		rootRotationTween,
 		camera, cameraTarget = new THREE.Vector3(),
 		cameraTween,
 		cameraTargetTween,
@@ -275,6 +277,10 @@
 		scene = new THREE.Scene();
 		//scene.fog = new THREE.Fog(0x383733, 300, 600);
 
+		root = new THREE.Object3D();
+		rootRotationTween = new TWEEN.Tween(root.rotation).easing(TWEEN.Easing.Exponential.In);
+		scene.add(root);
+
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 		cameraTween = new TWEEN.Tween(camera.position).easing(TWEEN.Easing.Exponential.InOut);
 		cameraTargetTween = new TWEEN.Tween(cameraTarget).easing(TWEEN.Easing.Circular.Out);
@@ -293,13 +299,11 @@
 
 		textToTheBeat = makeText(gfx.text_to_the_beat, numCopies);
 		textToTheBeat.scale.set(s, s, s);
-		scene.add(textToTheBeat);
 
-		grid = makeGrid(4000);
-		scene.add(grid);
+		grid = makeGrid(1000);
 
 		tris = makeTris(5600, 0.5, 85);
-		scene.add(tris);
+		root.add(tris);
 
 	}
 
@@ -385,6 +389,20 @@
 					switchText( (activeText !== textXPLSV) );
 
 				}
+
+				if(row % 8 === 0) {
+
+					var rot = Math.PI * 0.05;
+
+					rootRotationTween
+						.stop()
+						.to({
+							x: root.rotation.x + rrand(-rot, rot),
+							z: root.rotation.z + rrand(-rot, rot)
+						}, 500)
+						.start();
+
+				}
 			
 			}
 		
@@ -394,10 +412,10 @@
 		sorolletPlayer.addEventListener('orderChanged', function(e) {
 			var order = e.order;
 			if(order >= MAIN_ORDER && order < ENDING_ORDER + 2) {
-				scene.add(grid);
+				root.add(grid);
 				grid.materialTween.start();
 			} else {
-				scene.remove(grid);
+				root.remove(grid);
 			}
 
 		}, false);
@@ -486,12 +504,12 @@
 	function switchText(xplsv) {
 		if(xplsv) {
 			activeText = textXPLSV;
-			scene.remove(textToTheBeat);
+			root.remove(textToTheBeat);
 		} else {
 			activeText = textToTheBeat;
-			scene.remove(textXPLSV);
+			root.remove(textXPLSV);
 		}
-		scene.add(activeText);
+		root.add(activeText);
 	}
 
 
