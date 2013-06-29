@@ -263,10 +263,13 @@
 				'vec4 pos = vec4( position.xyz, 1.0 );',
 				
 				'float angle2 = angle + time;',
-				'float radius2 = radius + 0.5*radius * cos(time + pos.x*10.0);',
-				//'radius2 *= 10.0;',
-				'pos.y = radius2 * sin(angle2);',
-				'pos.z = radius2 * cos(angle2);',
+				'float radius2 = radius + 0.5*radius * cos(time*2.0 + angle2+pos.x*10.0);',
+				'float angle3 = angle + time * 5.0;',
+				'float radius3 = radius * 15.0;',
+
+				'radius2 *= 10.0;',
+				'pos.y = radius2 * sin(angle2) + radius3 * sin(angle3);',
+				'pos.z = radius2 * 0.5 * cos(angle2) + radius3 * cos(angle3);',
 
 				'gl_Position = projectionMatrix * modelViewMatrix * pos;',
 
@@ -275,11 +278,7 @@
 
 		var fragmentShader = [
 			'uniform float opacity;',
-			//'uniform float maxZ;',
 			'uniform vec3 color;',
-
-			//'varying vec2 vUv;',
-			//'varying float vZ;',
 
 			'void main() {',
 			'    gl_FragColor = vec4( color, opacity );',
@@ -295,7 +294,7 @@
 			},
 			uniforms: {
 				'radius': { type: 'f', value: radius },
-				'opacity': { type: 'f', value: 1.0 },
+				'opacity': { type: 'f', value: 0.0 },
 				'time': { type: 'f', value: 0.0 },
 				'color': { type: 'v3', value: new THREE.Vector3(0.478, 0.823, 0.921) }
 			},
@@ -320,7 +319,16 @@
 
 		THREE.GeometryUtils.center(geom);
 
-		var line = new THREE.Line(geom, mat, THREE.LinePieces);
+		var line = new THREE.Line(geom, mat, THREE.LineStrip);
+
+		var materialTweenProps = { opacity: 0 };
+		line.materialTween = new TWEEN.Tween(materialTweenProps)
+			.easing(TWEEN.Easing.Exponential.Out)
+			.onUpdate(function() {
+				mat.uniforms.opacity.value = this.opacity;
+			});
+
+		line.materialTween.properties = materialTweenProps;
 
 		return line;
 	}
@@ -356,7 +364,7 @@
 
 		grid = makeGrid(1000);
 
-		tris = makeTris(5600, 0.5, 85);
+		tris = makeTris(5600, 3, 85);
 		root.add(tris);
 
 	}
@@ -404,6 +412,13 @@
 
 			}
 
+			// If first order, first row -- fade tris in
+			if(order === 0 && row === 0) {
+				tris.material.uniforms.opacity.value = 0;
+				tris.materialTween.to({ opacity: 0.5 }, 2000)
+					.start();
+			}
+
 			if(order < MAIN_ORDER) {
 
 				if(row < 16 || (row > 32 && row < 48)) {
@@ -435,6 +450,12 @@
 							y: [-150, 50, 0]
 						}, 200)
 						.start();
+
+					tris.materialTween.stop();
+					tris.materialTween.properties.opacity = 0;
+					tris.materialTween.to({ opacity: [0.75, 0] }, 500)
+						.start();
+
 				}
 
 				if(row % 8 === 0) {
@@ -555,8 +576,10 @@
 			tScale = textScale + rrand(0, 0.1);
 			var elapsedRows = (order * 64 + row);
 			range += 0.8 * (1 - elapsedRows / 128.0);
+			tris.material.uniforms.time.value += 0.0005;
 		} else {
 			tScale = 80;
+			tris.material.uniforms.time.value += 0.01;
 		}
 
 		activeText.scale.set(tScale, tScale, tScale);
@@ -569,7 +592,6 @@
 			child.position.set(rrand(-range, range), rrand(-range, range), rrand(-range, range));
 		}
 
-		tris.material.uniforms.time.value += 0.01;
 
 		// TODO vertically downwards moving text
 
