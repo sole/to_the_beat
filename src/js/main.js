@@ -65,18 +65,18 @@
 	function audioSetup() {
 
 		audioContext = new AudioContext();
-		jsAudioNode = audioContext.createJavaScriptNode( BUFFER_SIZE ),
+		jsAudioNode = audioContext.createScriptProcessor( BUFFER_SIZE ),
 		sorolletPlayer = new SOROLLET.Player( SAMPLING_RATE );
 
 		//var compressorNode;
-		preCompressorGainNode = audioContext.createGainNode();
+		preCompressorGainNode = audioContext.createGain();
 		preCompressorGainNode.gain.value = 0.9;
 
 		if(audioContext.createDynamicsCompressor) {
 			compressorNode = audioContext.createDynamicsCompressor();
-			compressorNode.ratio = 12.0;
+			compressorNode.ratio.value = 12.0;
 		} else {
-			compressorNode = audioContext.createGainNode();
+			compressorNode = audioContext.createGain();
 			compressorNode.gain.value = 1.4;
 		}
 
