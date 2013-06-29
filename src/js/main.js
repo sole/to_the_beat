@@ -68,6 +68,7 @@
 		audioContext = new AudioContext();
 		jsAudioNode = audioContext.createJavaScriptNode( BUFFER_SIZE ),
 		sorolletPlayer = new SOROLLET.Player( SAMPLING_RATE );
+		// sorolletPlayer.repeat = false;
 
 		jsAudioNode.onaudioprocess = function(event) {
 			var buffer = event.outputBuffer,
@@ -118,6 +119,10 @@
 		sorolletPlayer.addEventListener('rowChanged', function(ev) {
 			songRow = ev.row;
 			updateInfo();
+		}, false);
+
+		sorolletPlayer.addEventListener('songEnded', function() {
+			document.getElementById('looping').style.display = 'block';
 		}, false);
 
 		songOrder = 0;
@@ -274,7 +279,7 @@
 
 	function graphicsSetup() {
 		scene = new THREE.Scene();
-		//scene.fog = new THREE.Fog(0x383733, 300, 600);
+		scene.fog = new THREE.Fog(0x383733, 300, 600);
 
 		root = new THREE.Object3D();
 		root.rotationTween = new TWEEN.Tween(root.rotation).easing(TWEEN.Easing.Exponential.In);
@@ -524,7 +529,8 @@
 	function updateInfo() {
 		info.innerHTML = 'order ' + songOrder + ': ' + songPattern + '/' + songRow + 
 			'<br />cam x=' + camera.position.x.toFixed(2) + ' y=' + camera.position.y.toFixed(2) + ' z= ' + camera.position.z.toFixed(2) +
-			'<br />target x=' + cameraTarget.x.toFixed(2) + ' y=' + cameraTarget.y.toFixed(2) + ' z= ' + cameraTarget.z.toFixed(2) ;
+			'<br />target x=' + cameraTarget.x.toFixed(2) + ' y=' + cameraTarget.y.toFixed(2) + ' z= ' + cameraTarget.z.toFixed(2) +
+			'<br />' + sorolletPlayer.finished;
 
 	}
 
