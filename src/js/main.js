@@ -163,16 +163,12 @@
 		for(var i = 0; i < numCharacters; i++) {
 			var numSegments = data[index++];
 
-			console.log('char', i, 'num segs', numSegments);
-
 			for(var j = 0; j < numSegments; j++) {
 				var absX1 = data[index++];
 				var absY1 = data[index++];
 				var absX2 = data[index++];
 				var absY2 = data[index++];
 				
-				console.log('segment', j, 'x', absX1, 'y', absY1);
-
 				lineGeometry.vertices.push(new THREE.Vector3(x + absX1, absY1, 0));
 				lineGeometry.vertices.push(new THREE.Vector3(x + absX2, absY2, 0));
 
@@ -256,8 +252,60 @@
 
 	function makeTris(length, separation, radius) {
 
+		var vertexShader = [
+			//'varying vec2 vUv;',
+			'uniform float time;',
+			'uniform float radius;',
+			'attribute float angle;',
+
+			'void main() {',
+
+				'vec4 pos = vec4( position.xyz, 1.0 );',
+				
+				'float angle2 = angle + time;',
+				'float radius2 = radius + 0.5*radius * cos(time + pos.x*10.0);',
+				//'radius2 *= 10.0;',
+				'pos.y = radius2 * sin(angle2);',
+				'pos.z = radius2 * cos(angle2);',
+
+				'gl_Position = projectionMatrix * modelViewMatrix * pos;',
+
+			'}'
+		].join('\n');
+
+		var fragmentShader = [
+			'uniform float opacity;',
+			//'uniform float maxZ;',
+			'uniform vec3 color;',
+
+			//'varying vec2 vUv;',
+			//'varying float vZ;',
+
+			'void main() {',
+			'    gl_FragColor = vec4( color, opacity );',
+			'}'
+		].join('\n');
+
 		var geom = new THREE.Geometry();
-		var mat = new THREE.LineBasicMaterial({ color: 0x79D1EA, transparent: true, blending: THREE.AdditiveBlending, linewidth: 2, opacity: 0.5 });
+		
+		// var mat = new THREE.LineBasicMaterial({ color: 0x79D1EA, transparent: true, blending: THREE.AdditiveBlending, linewidth: 2, opacity: 0.5 });
+		var mat = new THREE.ShaderMaterial({
+			attributes: {
+				'angle': { type: 'f', value: [] }
+			},
+			uniforms: {
+				'radius': { type: 'f', value: radius },
+				'opacity': { type: 'f', value: 1.0 },
+				'time': { type: 'f', value: 0.0 },
+				'color': { type: 'v3', value: new THREE.Vector3(0.478, 0.823, 0.921) }
+			},
+			vertexShader: vertexShader,
+			fragmentShader: fragmentShader
+		});
+		mat.linewidth = 1;
+		mat.blending = THREE.AdditiveBlending;
+		mat.transparent = true;
+		
 		var num = length / separation,
 			startX = -length / 2,
 			x = startX,
@@ -267,6 +315,7 @@
 			geom.vertices.push(new THREE.Vector3(x, radius * Math.sin(angle), radius * Math.cos(angle)));
 			x += separation;
 			angle = x * 5;
+			mat.attributes.angle.value.push(angle);
 		}
 
 		THREE.GeometryUtils.center(geom);
@@ -519,6 +568,8 @@
 			var child = activeTextChildren[i];
 			child.position.set(rrand(-range, range), rrand(-range, range), rrand(-range, range));
 		}
+
+		tris.material.uniforms.time.value += 0.01;
 
 		// TODO vertically downwards moving text
 
