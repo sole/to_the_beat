@@ -3,7 +3,7 @@
 AudioDetector = {
 
 	REVISION: 3,
-	webAudioSupport: typeof( window.webkitAudioContext ) === 'function',
+	webAudioSupport: typeof(window.AudioContext) === 'function' || typeof( window.webkitAudioContext ) === 'function',
 	oggSupport: document.createElement('audio').canPlayType('audio/ogg'),
 
 	errorMessages: {
