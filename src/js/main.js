@@ -197,8 +197,8 @@
 		var xPos = -gridTop;
 		var yPos;
 		var grid = new THREE.Object3D();
-		var gridThinMaterial = new THREE.LineDashedMaterial({ linewidth: 1, color: 0xF1EFB4, dashSize: 2, gapSize: 2, opacity: 0.25, transparent: true, blending: THREE.AdditiveBlending });
-		var gridThickMaterial = new THREE.LineBasicMaterial({ linewidth: 2, color: 0xF1EFB4, opacity: 0.5, transparent: true, blending: THREE.AdditiveBlending });
+		var gridThinMaterial = new THREE.LineDashedMaterial({ linewidth: 1, color: 0xF1EFB4, dashSize: 2, gapSize: 10, opacity: 0.25, transparent: true, blending: THREE.AdditiveBlending });
+		var gridThickMaterial = new THREE.LineBasicMaterial({ linewidth: 1, color: 0xF1EFB4, opacity: 0.25, transparent: true, blending: THREE.AdditiveBlending });
 		var geometryThin = new THREE.Geometry();
 		var geometryThick = new THREE.Geometry();
 		var geometry;
@@ -236,6 +236,14 @@
 
 		grid.add(new THREE.Line(geometryThin, gridThinMaterial, THREE.LinePieces));
 		grid.add(new THREE.Line(geometryThick, gridThickMaterial, THREE.LinePieces));
+
+		grid.materialTween = new TWEEN.Tween({ opacity: 0 })
+			.onUpdate(function() {
+				gridThinMaterial.opacity = this.opacity;
+				gridThickMaterial.opacity = this.opacity;
+			})
+			.easing(TWEEN.Easing.Exponential.InOut)
+			.to({ opacity: 0.4 }, 500);
 
 		return grid;
 	}
@@ -387,6 +395,7 @@
 			var order = e.order;
 			if(order >= MAIN_ORDER && order < ENDING_ORDER + 2) {
 				scene.add(grid);
+				grid.materialTween.start();
 			} else {
 				scene.remove(grid);
 			}
