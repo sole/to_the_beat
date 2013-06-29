@@ -12,7 +12,6 @@
 		renderer,
 		scene,
 		root,
-		rootRotationTween,
 		camera, cameraTarget = new THREE.Vector3(),
 		cameraTween,
 		cameraTargetTween,
@@ -278,7 +277,8 @@
 		//scene.fog = new THREE.Fog(0x383733, 300, 600);
 
 		root = new THREE.Object3D();
-		rootRotationTween = new TWEEN.Tween(root.rotation).easing(TWEEN.Easing.Exponential.In);
+		root.rotationTween = new TWEEN.Tween(root.rotation).easing(TWEEN.Easing.Exponential.In);
+		root.positionTween = new TWEEN.Tween(root.position).easing(TWEEN.Easing.Bounce.InOut);
 		scene.add(root);
 
 		camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
@@ -360,6 +360,7 @@
 
 			} else {
 
+				// Things that happen when there's a KICK
 				if(row % 4 === 0 || bdNote && bdNote === 48) {
 
 					r = 300;
@@ -373,6 +374,13 @@
 						}, 400)
 						.start();
 
+					// 'bump'
+					root.positionTween
+						.stop()
+						.to({
+							y: [-150, 50, 0]
+						}, 200)
+						.start();
 				}
 
 				if(row % 8 === 0) {
@@ -380,9 +388,9 @@
 					cameraTargetTween
 						.stop()
 						.to({
-							x: rrand(-r, r),
+							x: rrand(-20, 20),
 							y: rrand(-5, 5),
-							z: 10 + 5 * Math.sin(Date.now() * 0.001)
+							z: 10 + 3 * Math.sin(Date.now() * 0.001)
 						}, 1000)
 						.start();
 
@@ -394,7 +402,7 @@
 
 					var rot = Math.PI * 0.05;
 
-					rootRotationTween
+					root.rotationTween
 						.stop()
 						.to({
 							x: root.rotation.x + rrand(-rot, rot),
