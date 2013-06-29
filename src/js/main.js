@@ -464,6 +464,18 @@
 				newOrder = 0;
 			}
 
+		} else if(code === 68) {
+		
+			// toggle showing synths debug panel
+			var debug = document.getElementById('debug'),
+				ds = debug.style;
+
+			if(ds.display === 'block') {
+				ds.display = 'none';
+			} else {
+				ds.display = 'block';
+			}
+
 		}
 
 		if(newOrder > -1) {
