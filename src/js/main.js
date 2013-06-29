@@ -288,7 +288,7 @@
 		grid = makeGrid(4000);
 		scene.add(grid);
 
-		tris = makeTris(5600, 1, 85);
+		tris = makeTris(5600, 0.5, 85);
 		scene.add(tris);
 
 	}
@@ -309,7 +309,9 @@
 		// Audio setup
 		audioSetup();
 
-		// check for notes when the row changes, not on every frame
+		// Event listeners setup
+
+		// Check for notes when the row changes, not on every frame
 		sorolletPlayer.addEventListener('rowChanged', function(e) {
 			var order = e.order,
 				row = e.row,
@@ -384,11 +386,42 @@
 
 		}, false);
 
+		window.addEventListener('keyup', onKeyUp, false);
+
 		// Finally start playing!
 		// what was that thing that didn't quite work on Chrome if this was done too early due to some GC thingy? TODO check that out!
 		jsAudioNode.connect( audioContext.destination );
 		sorolletPlayer.play();
 	
+	}
+
+	function onKeyUp(e) {
+		
+		var code = e.keyCode,
+			newOrder = -1,
+			numOrders = sorolletPlayer.orderList.length;
+
+		if(code === 37) {
+			
+			// left == rewind
+			newOrder = songOrder - 1;
+			if(newOrder < 0) {
+				newOrder = numOrders - 1;
+			}
+
+		} else if(code === 39) {
+
+			// right
+			newOrder = songOrder + 1;
+			if(newOrder >= numOrders) {
+				newOrder = 0;
+			}
+
+		}
+
+		if(newOrder > -1) {
+			sorolletPlayer.jumpToOrder(newOrder, songRow);
+		}
 	}
 
 	function updateCamera(time, deltaTime, order, pattern, row) {
@@ -476,8 +509,6 @@
 		}
 
 		// TODO vertically downwards moving text
-
-		// TODO 'tris'
 
 		updateCamera(time, deltaTime, order, pattern, row);
 
