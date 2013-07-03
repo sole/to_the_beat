@@ -2,7 +2,6 @@
 	'use strict';
 
 	var DEVELOPING = false,
-		SAMPLING_RATE = 48000,
 		BUFFER_SIZE = 4096,
 		MAIN_ORDER = 2,
 		ENDING_ORDER = 6;
@@ -66,7 +65,7 @@
 
 		audioContext = new AudioContext();
 		jsAudioNode = audioContext.createScriptProcessor( BUFFER_SIZE ),
-		sorolletPlayer = new SOROLLET.Player( SAMPLING_RATE );
+		sorolletPlayer = new SOROLLET.Player( audioContext.sampleRate );
 
 		//var compressorNode;
 		preCompressorGainNode = audioContext.createGain();

@@ -25,6 +25,7 @@ SOROLLET.Legacy.loadSongFromArray = function(player, song) {
 		// Init voices
 		for(j = 0; j < numVoices; j++) {
 			voice = new SOROLLET.Voice();
+			voice.setSamplingRate(player.samplingRate);
 			player.voices.push( voice );
 		}
 
