@@ -566,6 +566,7 @@ SOROLLET.Player = function( _samplingRate ) {
 		outBuffer = [],
 		scope = this;
 
+	this.samplingRate = samplingRate;
 	this.bpm = 100;
 	this.linesPerBeat = 4;
 	this.ticksPerLine = 12;
