@@ -59,6 +59,14 @@ BiquadFilterNode.type and OscillatorNode.type.
       !window.hasOwnProperty('AudioContext')) {
     window.AudioContext = webkitAudioContext;
 
+	if (!AudioContext.prototype.hasOwnProperty('createGain'))
+      AudioContext.prototype.createGain = AudioContext.prototype.createGainNode;
+    if (!AudioContext.prototype.hasOwnProperty('createDelay'))
+      AudioContext.prototype.createDelay = AudioContext.prototype.createDelayNode;
+    if (!AudioContext.prototype.hasOwnProperty('createScriptProcessor'))
+      AudioContext.prototype.createScriptProcessor = AudioContext.prototype.createJavaScriptNode;
+
+
     AudioContext.prototype.internal_createGain = AudioContext.prototype.createGain;
     AudioContext.prototype.createGain = function() { 
       var node = this.internal_createGain();
@@ -126,12 +134,6 @@ BiquadFilterNode.type and OscillatorNode.type.
       };
     }
 
-    if (!AudioContext.prototype.hasOwnProperty('createGain'))
-      AudioContext.prototype.createGain = AudioContext.prototype.createGainNode;
-    if (!AudioContext.prototype.hasOwnProperty('createDelay'))
-      AudioContext.prototype.createDelay = AudioContext.prototype.createDelayNode;
-    if (!AudioContext.prototype.hasOwnProperty('createScriptProcessor'))
-      AudioContext.prototype.createScriptProcessor = AudioContext.prototype.createJavaScriptNode;
-  }
+      }
 }(window));
 
