@@ -137,7 +137,6 @@ BiquadFilterNode.type and OscillatorNode.type.
       }
 }(window));
 
-
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mr.doob / http://mrdoob.com/
@@ -197,13 +196,11 @@ Detector = {
 	}
 
 };
-
 // AudioDetector.js / https://github.com/sole/AudioDetector.js
 // Based on alteredq & mrdoob's Detector.js https://github.com/mrdoob/three.js/blob/master/examples/js/Detector.js
 AudioDetector = {
 
 	REVISION: 3,
-	//webAudioSupport: typeof(window.AudioContext) === 'function' || typeof( window.webkitAudioContext ) === 'function',
 	webAudioSupport: (window.AudioContext !== undefined || window.webkitAudioContext !== undefined),
 	oggSupport: document.createElement('audio').canPlayType('audio/ogg'),
 
@@ -280,7 +277,6 @@ AudioDetector = {
 	}
 
 };
-
 // sorollet.js - http://github.com/sole/sorollet.js
 var SOROLLET = SOROLLET || { 
         REVISION: '2'
@@ -2425,8 +2421,9 @@ var StringFormat = {
 }
 SOROLLET.ADSRGUI = function( params ) {
 
-	var params = params || {},
-		label = params.label || '',
+	params = params || {};
+
+	var label = params.label || '',
 		outMin = params.outMin || 0,
 		outMax = params.outMax || 1,
 		step = params.step || 0.5,
@@ -2593,9 +2590,10 @@ SOROLLET.ADSRGUI = function( params ) {
 		
 		// ADSR 'proper'
 
-		if( ctx.setLineDash) {
-			ctx.setLineDash( null );
+		if( ctx.setLineDash ) {
+			ctx.setLineDash( [] );
 		}
+
 		ctx.beginPath();
 		ctx.moveTo( ox, oy );
 		ctx.lineTo( ax, ay );
@@ -2647,7 +2645,7 @@ SOROLLET.ADSRGUI = function( params ) {
 	updateGraph();
 
 
-}
+};
 SOROLLET.VoiceGUI = function( params ) {
 	'use strict';
 
@@ -3200,8 +3198,9 @@ SOROLLET.KnobGUI = function( params ) {
 SOROLLET.WaveTypeSelectGUI = function( params ) {
 	'use strict';
 
-	var params = params || {},
-		graphWidth = params.graphWidth !== undefined ? params.graphWidth : 50,
+	params = params || {};
+
+	var graphWidth = params.graphWidth !== undefined ? params.graphWidth : 50,
 		graphHeight = params.graphHeight !== undefined ? params.graphHeight : 30,
 		backgroundStyle = params.backgroundStyle !== undefined ? params.backgroundStyle : null,
 		strokeStyle = params.strokeStyle !== undefined ? params.strokeStyle : '#000000',
@@ -3229,8 +3228,9 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 	canvas.addEventListener('click', onCanvasClick, false);
 
 	function onCanvasClick( e ) {
+		
 		var x = e.offsetX,
-			w = e.srcElement.offsetWidth;
+			w = canvas.offsetWidth;
 
 		e.preventDefault();
 		e.stopPropagation();
@@ -3293,9 +3293,9 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 		ctx.beginPath();
 
 		for( var i = 0; i <= graphWidth; i++) {
-			y = plotBuffer[i] * graphHeightRange * .5 + graphHeight * 0.5;
+			y = plotBuffer[i] * graphHeightRange * 0.5 + graphHeight * 0.5;
 
-			if( x == 0 ) {
+			if( x === 0 ) {
 				ctx.moveTo( x, y );
 			}
 
@@ -3320,7 +3320,7 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 			numWaveFunctions++;
 		}
 		return this;
-	}
+	};
 
 
 	function setValue( v ) {
@@ -3334,15 +3334,15 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 
 	this.getValue = function( ) {
 		return value;
-	}
+	};
 
 	this.onChange = function( newOnChangeHandler ) {
 		onChangeHandler = newOnChangeHandler;
 		return this;
-	}
+	};
 
 	return this;
-}
+};
 SOROLLET.MultipleStatePushButton = function( params ) {
 	'use strict';
 	var params = params || {},
@@ -3507,7 +3507,6 @@ SOROLLET.ScopeGraph = function( params ) {
 	return this;
 
 };
-
 // Something to be able to use old (~2008) data with recent Sorollet versions
 SOROLLET.Legacy = {};
 SOROLLET.Legacy.loadSongFromArray = function(player, song) {
@@ -3708,7 +3707,6 @@ SOROLLET.Legacy.loadSongFromArray = function(player, song) {
 	}
 	
 };
-
 // three.js - http://github.com/mrdoob/three.js
 'use strict';var THREE=THREE||{REVISION:"58"};self.console=self.console||{info:function(){},log:function(){},debug:function(){},warn:function(){},error:function(){}};self.Int32Array=self.Int32Array||Array;self.Float32Array=self.Float32Array||Array;String.prototype.trim=String.prototype.trim||function(){return this.replace(/^\s+|\s+$/g,"")};
 THREE.extend=function(a,b){if(Object.keys)for(var c=Object.keys(b),d=0,e=c.length;d<e;d++){var f=c[d];Object.defineProperty(a,f,Object.getOwnPropertyDescriptor(b,f))}else for(f in c={}.hasOwnProperty,b)c.call(b,f)&&(a[f]=b[f]);return a};
@@ -4419,7 +4417,6 @@ s.matrixWorld),b.renderImmediateObject(j,i.__lights,null,c,s));m=b.getClearColor
 fragmentShader:"uniform lowp int renderType;\nuniform sampler2D map;\nuniform float opacity;\nuniform vec3 color;\nvarying vec2 vUV;\nvarying float vVisibility;\nvoid main() {\nif( renderType == 0 ) {\ngl_FragColor = vec4( 1.0, 0.0, 1.0, 0.0 );\n} else if( renderType == 1 ) {\ngl_FragColor = texture2D( map, vUV );\n} else {\nvec4 texture = texture2D( map, vUV );\ntexture.a *= opacity * vVisibility;\ngl_FragColor = texture;\ngl_FragColor.rgb *= color;\n}\n}"},lensFlare:{vertexShader:"uniform lowp int renderType;\nuniform vec3 screenPosition;\nuniform vec2 scale;\nuniform float rotation;\nattribute vec2 position;\nattribute vec2 uv;\nvarying vec2 vUV;\nvoid main() {\nvUV = uv;\nvec2 pos = position;\nif( renderType == 2 ) {\npos.x = cos( rotation ) * position.x - sin( rotation ) * position.y;\npos.y = sin( rotation ) * position.x + cos( rotation ) * position.y;\n}\ngl_Position = vec4( ( pos * scale + screenPosition.xy ).xy, screenPosition.z, 1.0 );\n}",
 fragmentShader:"precision mediump float;\nuniform lowp int renderType;\nuniform sampler2D map;\nuniform sampler2D occlusionMap;\nuniform float opacity;\nuniform vec3 color;\nvarying vec2 vUV;\nvoid main() {\nif( renderType == 0 ) {\ngl_FragColor = vec4( texture2D( map, vUV ).rgb, 0.0 );\n} else if( renderType == 1 ) {\ngl_FragColor = texture2D( map, vUV );\n} else {\nfloat visibility = texture2D( occlusionMap, vec2( 0.5, 0.1 ) ).a +\ntexture2D( occlusionMap, vec2( 0.9, 0.5 ) ).a +\ntexture2D( occlusionMap, vec2( 0.5, 0.9 ) ).a +\ntexture2D( occlusionMap, vec2( 0.1, 0.5 ) ).a;\nvisibility = ( 1.0 - visibility / 4.0 );\nvec4 texture = texture2D( map, vUV );\ntexture.a *= opacity * visibility;\ngl_FragColor = texture;\ngl_FragColor.rgb *= color;\n}\n}"}};THREE.ShaderSprite={sprite:{vertexShader:"uniform int useScreenCoordinates;\nuniform int sizeAttenuation;\nuniform vec3 screenPosition;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\nuniform float rotation;\nuniform vec2 scale;\nuniform vec2 alignment;\nuniform vec2 uvOffset;\nuniform vec2 uvScale;\nattribute vec2 position;\nattribute vec2 uv;\nvarying vec2 vUV;\nvoid main() {\nvUV = uvOffset + uv * uvScale;\nvec2 alignedPosition = position + alignment;\nvec2 rotatedPosition;\nrotatedPosition.x = ( cos( rotation ) * alignedPosition.x - sin( rotation ) * alignedPosition.y ) * scale.x;\nrotatedPosition.y = ( sin( rotation ) * alignedPosition.x + cos( rotation ) * alignedPosition.y ) * scale.y;\nvec4 finalPosition;\nif( useScreenCoordinates != 0 ) {\nfinalPosition = vec4( screenPosition.xy + rotatedPosition, screenPosition.z, 1.0 );\n} else {\nfinalPosition = projectionMatrix * modelViewMatrix * vec4( 0.0, 0.0, 0.0, 1.0 );\nfinalPosition.xy += rotatedPosition * ( sizeAttenuation == 1 ? 1.0 : finalPosition.z );\n}\ngl_Position = finalPosition;\n}",
 fragmentShader:"uniform vec3 color;\nuniform sampler2D map;\nuniform float opacity;\nuniform int fogType;\nuniform vec3 fogColor;\nuniform float fogDensity;\nuniform float fogNear;\nuniform float fogFar;\nuniform float alphaTest;\nvarying vec2 vUV;\nvoid main() {\nvec4 texture = texture2D( map, vUV );\nif ( texture.a < alphaTest ) discard;\ngl_FragColor = vec4( color * texture.xyz, texture.a * opacity );\nif ( fogType > 0 ) {\nfloat depth = gl_FragCoord.z / gl_FragCoord.w;\nfloat fogFactor = 0.0;\nif ( fogType == 1 ) {\nfogFactor = smoothstep( fogNear, fogFar, depth );\n} else {\nconst float LOG2 = 1.442695;\nfloat fogFactor = exp2( - fogDensity * fogDensity * depth * depth * LOG2 );\nfogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );\n}\ngl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );\n}\n}"}};
-
 /**
  * @author sole / http://soledadpenades.com
  * @author mrdoob / http://mrdoob.com
@@ -5110,7 +5107,6 @@ TWEEN.Interpolation = {
 
 };
 
-
 var song = [
 	// bpm, speed, num channels
 	140, 6, 2,
@@ -5585,7 +5581,6 @@ var song = [
 
 
 ];
-
 var gfx = {
 	text_xplsv : [
 		5, // number of letters
@@ -5691,7 +5686,6 @@ var gfx = {
 
 	]
 };
-
 (function() {
 	'use strict';
 
@@ -6363,4 +6357,3 @@ var gfx = {
 	}
 
 })();
-
