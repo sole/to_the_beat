@@ -30,11 +30,10 @@ a:hover {
 
 h1 {
 	font-weight: normal;
-	font-size: 2.5rem;
+	font-size: 2rem;
 }
 
 #intro {
-	width: 50%;
 	margin: 0 auto;
 	text-align: center;
 }
@@ -128,4 +127,14 @@ h1 {
 .control .label {
 	font-size: 9px;
 	text-transform: lowercase;
+}
+
+@media (width > 1024px) {
+	#intro {
+		width: 50%;
+	}
+
+	h1 {
+		font-size: 2.5rem;
+	}
 }
